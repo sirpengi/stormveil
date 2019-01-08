@@ -1,29 +1,11 @@
-const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-
-export enum Piece {
-    None,
-    Empty,
-    Attacker,
-    Defender,
-    King,
-    Castle,
-    Refuge,
-
-    Throne,
-    Sanctuary,
-}
-
-export enum Side {
-    None,
-    Attackers,
-    Defenders,
-}
+import { Side } from "./side";
+import { Piece } from "./piece";
 
 export interface IBoard {
     [key: string]: Piece;
 }
 
-export type Vector = [number, number];
+const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 export function vec(s: string): Vector {
     const [x, y] = s.split(",").map(Number);
@@ -118,7 +100,7 @@ function into(a: Piece, b: Piece): Piece {
     }
 }
 
-export function play(state: IBoard, a: Vector, b: Vector): IBoard {
+export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
     const piece = get(state, a);
 
     const nextState = offsets.reduce((prevState, offset) => {

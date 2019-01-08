@@ -1,4 +1,5 @@
-import { IBoard, key, Piece, vec } from "./board";
+import { IBoard, key, vec } from "./board";
+import { Piece } from "./piece";
 
 function piece(s: string): Piece {
     switch (s) {

@@ -1,5 +1,6 @@
 import test from "tape";
-import { IBoard, play, Side, Vector, victor } from "./board";
+import { IBoard, resolve, victor } from "./board";
+import { Side } from "./side";
 import { serialize, template } from "./template";
 
 type ITestCasePlay = [string, IBoard, IBoard, Vector, Vector];
@@ -153,7 +154,7 @@ test("Verify plays, including moves and capturing.", (assert) => {
     ];
 
     tests.forEach(([message, board, expected, a, b]) => {
-        const actual = play(board, a, b);
+        const actual = resolve(board, a, b);
         assert.deepEquals(
             actual,
             expected,
