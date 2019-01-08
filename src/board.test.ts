@@ -1,11 +1,13 @@
 import test from "tape";
-import { IBoard, play, Vector } from "./board";
-import { template, serialize } from "./template";
+import { IBoard, play, Side, Vector, victor } from "./board";
+import { serialize, template } from "./template";
 
-type IPlayTestCase = [string, IBoard, IBoard, Vector, Vector];
+type ITestCasePlay = [string, IBoard, IBoard, Vector, Vector];
 
-test("", (assert) => {
-    const tests: IPlayTestCase[] = [
+type ITestCaseVictor = [string, IBoard, Side | null];
+
+test("Verify plays, including moves and capturing.", (assert) => {
+    const tests: ITestCasePlay[] = [
         [
             "Move without capture one space to the east.",
             template`A _`,
@@ -159,6 +161,45 @@ test("", (assert) => {
                 + "\n" + "Expected:\n" + serialize(expected)
                 + "\n\n" + "Actual:\n" + serialize(actual),
         );
+    });
+
+    assert.end();
+});
+
+test("Verify victory state by examining the board.", (assert) => {
+    const tests: ITestCaseVictor[] = [
+        [
+            "Attackers win.",
+            template`
+                A _ _
+                _ _ A
+                _ D _
+            `,
+            Side.Attackers,
+        ],
+        [
+            "Defenders win.",
+            template`
+                S _ A
+                D _ _
+                _ A A
+            `,
+            Side.Defenders,
+        ],
+        [
+            "No victor.",
+            template`
+                K _ _ R
+                D _ A _
+                D A _ _
+            `,
+            null,
+        ],
+    ];
+
+    tests.forEach(([message, board, expected]) => {
+        const actual = victor(board);
+        assert.equals(actual, expected, message);
     });
 
     assert.end();

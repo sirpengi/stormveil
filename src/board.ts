@@ -13,7 +13,7 @@ export enum Piece {
     Sanctuary,
 }
 
-enum Side {
+export enum Side {
     None,
     Attackers,
     Defenders,
@@ -164,4 +164,17 @@ export function play(state: IBoard, a: Vector, b: Vector): IBoard {
         [key(a)]: away(piece),
         [key(b)]: into(beneath(piece), get(nextState, b)),
     });
+}
+
+export function victor(s: IBoard): Side | null {
+    const ts = Object.values(s);
+    if (ts.includes(Piece.Sanctuary)) {
+        return Side.Defenders;
+    }
+
+    if (!(ts.includes(Piece.King))) {
+        return Side.Attackers;
+    }
+
+    return null;
 }
