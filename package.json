@@ -1,0 +1,17 @@
+{
+  "name": "stormveil",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/main.ts",
+  "scripts": {
+    "test": "tsc && tape build/**/*.test.js"
+  },
+  "author": "Samuel Ferrell",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/tape": "^4.2.33",
+    "tape": "^4.9.2",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2"
+  }
+}
