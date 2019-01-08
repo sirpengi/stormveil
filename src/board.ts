@@ -109,13 +109,13 @@ function away(a: Piece): Piece {
 
 function into(a: Piece, b: Piece): Piece {
     switch (b) {
-        case Piece.Refuge:
-            return Piece.Sanctuary;
         case Piece.Throne:
             return Piece.Castle;
+        case Piece.Refuge:
+            return Piece.Sanctuary;
+        default:
+            return a;
     }
-
-    return a;
 }
 
 export function play(state: IBoard, a: Vector, b: Vector): IBoard {
