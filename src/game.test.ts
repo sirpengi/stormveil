@@ -1,11 +1,11 @@
 import test from "tape";
+import { unmarshal } from "./board";
 import { createNew } from "./game";
 import { Side } from "./side";
-import { template } from "./template";
 
 test("Shallow exercise of 'createNew' and game object interface.", (assert) => {
     const start = Side.Defenders;
-    const board = template`
+    const board = unmarshal`
         R _ A _ R
         _ _ D _ _
         A D K D A
@@ -40,7 +40,7 @@ test("Shallow exercise of 'createNew' and game object interface.", (assert) => {
 });
 
 test("Turn state cycles between attackers and defenders.", (assert) => {
-    const board = template`
+    const board = unmarshal`
         _ K _ D _
         _ _ _ _ _
         _ D _ A _
@@ -57,7 +57,7 @@ test("Turn state cycles between attackers and defenders.", (assert) => {
     assert.equals(
         game.getState().start,
         Side.Attackers,
-        "The 'start' state is immutable."
+        "The 'start' state is immutable.",
     );
 
     assert.equals(

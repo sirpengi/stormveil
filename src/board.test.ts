@@ -1,7 +1,6 @@
 import test from "tape";
-import { IBoard, resolve, victor } from "./board";
+import { IBoard, marshal, resolve, unmarshal, victor } from "./board";
 import { Side } from "./side";
-import { serialize, template } from "./template";
 
 type ITestCasePlay = [string, IBoard, IBoard, Vector, Vector];
 
@@ -11,67 +10,67 @@ test("Verify plays, including moves and capturing.", (assert) => {
     const tests: ITestCasePlay[] = [
         [
             "Move without capture one space to the east.",
-            template`A _`,
-            template`_ A`,
+            unmarshal`A _`,
+            unmarshal`_ A`,
             [0, 0],
             [1, 0],
         ],
         [
             "Move without capture one space to the west.",
-            template`_ A`,
-            template`A _`,
+            unmarshal`_ A`,
+            unmarshal`A _`,
             [1, 0],
             [0, 0],
         ],
         [
             "Move without capture one space to the north.",
-            template`_ _ _\n_ K _\n_ _ _`,
-            template`_ K _\n_ _ _\n_ _ _`,
+            unmarshal`_ _ _\n_ K _\n_ _ _`,
+            unmarshal`_ K _\n_ _ _\n_ _ _`,
             [1, 1],
             [1, 0],
         ],
         [
             "Defender captures an attacker.",
-            template`_ A D\nD _ _`,
-            template`D _ D\n_ _ _`,
+            unmarshal`_ A D\nD _ _`,
+            unmarshal`D _ D\n_ _ _`,
             [0, 1],
             [0, 0],
         ],
         [
             "King moves away from a castle.",
-            template`C _ _`,
-            template`T K _`,
+            unmarshal`C _ _`,
+            unmarshal`T K _`,
             [0, 0],
             [1, 0],
         ],
         [
             "King moves away from a sanctuary.",
-            template`S _`,
-            template`R K`,
+            unmarshal`S _`,
+            unmarshal`R K`,
             [0, 0],
             [1, 0],
         ],
         [
             "King moves into a refuge.",
-            template`R K`,
-            template`S _`,
+            unmarshal`R K`,
+            unmarshal`S _`,
             [1, 0],
             [0, 0],
         ],
         [
             "King moves into a throne.",
-            template`T K`,
-            template`C _`,
+            unmarshal`T K`,
+            unmarshal`C _`,
             [1, 0],
             [0, 0],
         ],
         [
             "Attacker must totally surround the king to capture it.",
-            template`
+            unmarshal`
                 _ K A
                 A _ _
             `,
-            template`
+            unmarshal`
                 A K A
                 _ _ _
             `,
@@ -80,11 +79,11 @@ test("Verify plays, including moves and capturing.", (assert) => {
         ],
         [
             "Attacker captures multiple defenders.",
-            template`
+            unmarshal`
                 A D _ D A
                 _ _ A _ _
             `,
-            template`
+            unmarshal`
                 A _ A _ A
                 _ _ _ _ _
             `,
@@ -93,12 +92,12 @@ test("Verify plays, including moves and capturing.", (assert) => {
         ],
         [
             "Defender captures multiple attackers.",
-            template`
+            unmarshal`
                 _ _ D _ _
                 _ _ A _ _
                 _ D _ A D
             `,
-            template`
+            unmarshal`
                 _ _ D _ _
                 _ _ _ _ _
                 _ _ D _ D
@@ -108,11 +107,11 @@ test("Verify plays, including moves and capturing.", (assert) => {
         ],
         [
             "Defender captures an attacker using the king as an anvil.",
-            template`
+            unmarshal`
                 K A _
                 _ _ D
             `,
-            template`
+            unmarshal`
                 K _ D
                 _ _ _
             `,
@@ -121,12 +120,12 @@ test("Verify plays, including moves and capturing.", (assert) => {
         ],
         [
             "Attackers capture the king.",
-            template`
+            unmarshal`
                 _ A _
                 _ K A
                 A A _
             `,
-            template`
+            unmarshal`
                 _ A _
                 A _ A
                 _ A _
@@ -136,13 +135,13 @@ test("Verify plays, including moves and capturing.", (assert) => {
         ],
         [
             "Attackers capture the king and a defender.",
-            template`
+            unmarshal`
                 _ A _ _
                 _ D A _
                 _ _ K A
                 _ A A _
             `,
-            template`
+            unmarshal`
                 _ A _ _
                 _ _ A _
                 _ A _ A
@@ -159,8 +158,8 @@ test("Verify plays, including moves and capturing.", (assert) => {
             actual,
             expected,
             message
-                + "\n" + "Expected:\n" + serialize(expected)
-                + "\n\n" + "Actual:\n" + serialize(actual),
+                + "\n" + "Expected:\n" + marshal(expected)
+                + "\n\n" + "Actual:\n" + marshal(actual),
         );
     });
 
@@ -171,7 +170,7 @@ test("Verify victory state by examining the board.", (assert) => {
     const tests: ITestCaseVictor[] = [
         [
             "Attackers win.",
-            template`
+            unmarshal`
                 A _ _
                 _ _ A
                 _ D _
@@ -180,7 +179,7 @@ test("Verify victory state by examining the board.", (assert) => {
         ],
         [
             "Defenders win.",
-            template`
+            unmarshal`
                 S _ A
                 D _ _
                 _ A A
@@ -189,7 +188,7 @@ test("Verify victory state by examining the board.", (assert) => {
         ],
         [
             "No victor.",
-            template`
+            unmarshal`
                 K _ _ R
                 D _ A _
                 D A _ _

@@ -1,5 +1,5 @@
-import { Side } from "./side";
 import { Piece } from "./piece";
+import { Side } from "./side";
 
 export interface IBoard {
     [key: string]: Piece;
@@ -159,4 +159,59 @@ export function victor(s: IBoard): Side | null {
     }
 
     return null;
+}
+
+function decode(t: Piece): string {
+    switch (t) {
+        case Piece.Attacker:    return "A";
+        case Piece.Castle:      return "C";
+        case Piece.Defender:    return "D";
+        case Piece.Empty:       return "_";
+        case Piece.King:        return "K";
+        case Piece.None:        return "N";
+        case Piece.Refuge:      return "R";
+        case Piece.Sanctuary:   return "S";
+        case Piece.Throne:      return "T";
+        default:                return " ";
+    }
+}
+
+function encode(s: string): Piece {
+    switch (s) {
+        case "A": return Piece.Attacker;
+        case "C": return Piece.Castle;
+        case "D": return Piece.Defender;
+        case "_": return Piece.Empty;
+        case "K": return Piece.King;
+        case "N": return Piece.None;
+        case "R": return Piece.Refuge;
+        case "S": return Piece.Sanctuary;
+        case "T": return Piece.Throne;
+        default:  return Piece.None;
+    }
+}
+
+export function marshal(s: IBoard): string {
+    const result: Piece[][] = [];
+    Object.keys(s).forEach((k) => {
+        const [x, y] = vec(k);
+        if (!Array.isArray(result[y])) {
+            result[y] = [];
+        }
+
+        result[y][x] = s[k];
+    });
+
+    return result.map((r) => r.map(decode).join(" ")).join("\n");
+}
+
+export function unmarshal(strings: TemplateStringsArray): IBoard {
+    return strings[0]
+        .trim()
+        .replace(/ /g, "")
+        .split(/\n/g)
+        .map((v) => v.split(""))
+        .reduce((result, symbols, y) =>
+            ({ ...result, ...symbols.reduce((dict, sym, x) =>
+                ({ ...dict, [key([x, y])]: encode(sym) }), {}) }), {});
 }
