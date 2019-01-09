@@ -7,12 +7,12 @@ export interface IBoard {
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-export function vec(s: string): Vector {
+function vec(s: string): Vector {
     const [x, y] = s.split(",").map(Number);
     return [x, y];
 }
 
-export function key(v: Vector): string {
+function key(v: Vector): string {
     return v.toString();
 }
 
