@@ -68,7 +68,7 @@ function isEnemy(a: Piece, b: Piece): boolean {
     return sa !== sb;
 }
 
-function beneath(a: Piece): Piece {
+function inside(a: Piece): Piece {
     switch (a) {
         case Piece.Castle:
         case Piece.Sanctuary:
@@ -144,7 +144,7 @@ export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
 
     return merge(nextState, {
         [key(a)]: away(piece),
-        [key(b)]: into(beneath(piece), get(nextState, b)),
+        [key(b)]: into(inside(piece), get(nextState, b)),
     });
 }
 
