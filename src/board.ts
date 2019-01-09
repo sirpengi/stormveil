@@ -41,7 +41,7 @@ function remove<K extends string>({ [k]: _, ...dict }: IBoard, k: K): Omit<IBoar
 }
 
 function capture(s: IBoard, v: Vector): IBoard {
-    return { ...remove(s, key(v)), [key(v)]: Piece.Empty };
+    return merge(s, remove(s, (key(v))), { [key(v)]: away(get(s, v)) });
 }
 
 function side(t: Piece): Side {
