@@ -150,6 +150,34 @@ test("Verify plays, including moves and capturing.", (assert) => {
             [1, 3],
             [1, 2],
         ],
+        [
+            "Defenders may use thrones as anvils.",
+            unmarshal`D _ A T`,
+            unmarshal`_ D _ T`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Attackers may use thrones as anvils.",
+            unmarshal`A _ D T`,
+            unmarshal`_ A _ T`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Defenders may use the castle as an anvil.",
+            unmarshal`D _ A C`,
+            unmarshal`_ D _ C`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Attackers may not use the castle as an anvil.",
+            unmarshal`A _ D C`,
+            unmarshal`_ A D C`,
+            [0, 0],
+            [1, 0],
+        ],
     ];
 
     tests.forEach(([message, board, expected, a, b]) => {

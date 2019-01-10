@@ -7,7 +7,7 @@ export interface IBoard {
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-function vec(s: string): Vector {
+function keyVec(s: string): Vector {
     const [x, y] = s.split(",").map(Number);
     return [x, y];
 }
@@ -25,8 +25,8 @@ function get(s: IBoard, v: Vector): Tile {
     return t;
 }
 
-function gets(s: IBoard, v: Vector[]): Tile[] {
-    return v.map((t) => get(s, t));
+function eq([ax, ay]: Vector, ...vs: Vector[]): boolean {
+    return vs.every(([bx, by]) => ax === bx && ay === by);
 }
 
 function add(...v: Vector[]): Vector {
@@ -63,14 +63,16 @@ function side(t: Tile): Side {
     }
 }
 
-function isEnemy(a: Tile, b: Tile): boolean {
-    const sa = side(a);
-    const sb = side(b);
-    if (sa === Side.None || sb === Side.None) {
+function hostile(a: Tile, b: Tile): boolean {
+    if (a === Tile.Throne || b === Tile.Throne) {
+        return true;
+    }
+
+    if (side(a) === Side.None || side(b) === Side.None) {
         return false;
     }
 
-    return sa !== sb;
+    return side(a) !== side(b);
 }
 
 function inside(a: Tile): Tile {
@@ -109,25 +111,21 @@ export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
     const tile = get(state, a);
 
     const nextState = offsets.reduce((prevState, offset) => {
-        const v = add(b, offset);
+        const c = add(b, offset);
 
         // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
-        const neighbor = get(prevState, v);
-        if (!isEnemy(tile, neighbor)) {
+        const neighbor = get(prevState, c);
+        if (!hostile(tile, neighbor)) {
             return prevState;
         }
 
         // Attackers may capture the king only when they have the king
         // surrounded on all four sides.
         if (tile === Tile.Attacker && neighbor === Tile.King) {
-            const anvils = gets(prevState, offsets.map((o) => add(v, o)))
-                .filter((p) => p === Tile.Attacker);
-
-            // Three attackers already surround the king: this play will result
-            // in it being surrounded on all four sides and captured.
-            if (anvils.length === 3) {
-                return capture(prevState, v);
+            const anvils = offsets.map(v => add(c, v)).filter(v => !eq(b, v)).map(v => get(prevState, v));
+            if (anvils.every(t => t === Tile.Attacker)) {
+                return capture(prevState, c);
             }
 
             // The king is not totally surrounded, return early to avoid the
@@ -140,8 +138,8 @@ export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
         // or on the same side as the moving tile, the center tile is
         // considered captured.
         const anvil = get(prevState, add(b, mul(offset, 2)));
-        if (side(anvil) === side(tile) || anvil === Tile.None) {
-            return capture(prevState, v);
+        if (hostile(neighbor, anvil)) {
+            return capture(prevState, c);
         }
 
         return prevState;
@@ -199,7 +197,7 @@ function encode(s: string): Tile {
 export function marshal(s: IBoard): string {
     const result: Tile[][] = [];
     Object.keys(s).forEach((k) => {
-        const [x, y] = vec(k);
+        const [x, y] = keyVec(k);
         if (!Array.isArray(result[y])) {
             result[y] = [];
         }
