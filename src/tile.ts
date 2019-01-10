@@ -1,4 +1,4 @@
-export enum Piece {
+export enum Tile {
     None,
     Empty,
     Attacker,
@@ -6,7 +6,6 @@ export enum Piece {
     King,
     Castle,
     Refuge,
-
     Throne,
     Sanctuary,
 }

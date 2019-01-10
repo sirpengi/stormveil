@@ -1,8 +1,8 @@
-import { Piece } from "./piece";
 import { Side } from "./side";
+import { Tile } from "./tile";
 
 export interface IBoard {
-    [key: string]: Piece;
+    [key: string]: Tile;
 }
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -16,11 +16,11 @@ function key(v: Vector): string {
     return v.toString();
 }
 
-function get(s: IBoard, v: Vector): Piece {
-    return s[key(v)] || Piece.None;
+function get(s: IBoard, v: Vector): Tile {
+    return s[key(v)] || Tile.None;
 }
 
-function gets(s: IBoard, v: Vector[]): Piece[] {
+function gets(s: IBoard, v: Vector[]): Tile[] {
     return v.map((t) => get(s, t));
 }
 
@@ -44,21 +44,21 @@ function capture(s: IBoard, v: Vector): IBoard {
     return merge(s, remove(s, (key(v))), { [key(v)]: away(get(s, v)) });
 }
 
-function side(t: Piece): Side {
+function side(t: Tile): Side {
     switch (t) {
-        case Piece.Defender:
-        case Piece.King:
-        case Piece.Castle:
-        case Piece.Sanctuary:
+        case Tile.Defender:
+        case Tile.King:
+        case Tile.Castle:
+        case Tile.Sanctuary:
             return Side.Defenders;
-        case Piece.Attacker:
+        case Tile.Attacker:
             return Side.Attackers;
         default:
             return Side.None;
     }
 }
 
-function isEnemy(a: Piece, b: Piece): boolean {
+function isEnemy(a: Tile, b: Tile): boolean {
     const sa = side(a);
     const sb = side(b);
     if (sa === Side.None || sb === Side.None) {
@@ -68,56 +68,56 @@ function isEnemy(a: Piece, b: Piece): boolean {
     return sa !== sb;
 }
 
-function inside(a: Piece): Piece {
+function inside(a: Tile): Tile {
     switch (a) {
-        case Piece.Castle:
-        case Piece.Sanctuary:
-            return Piece.King;
+        case Tile.Castle:
+        case Tile.Sanctuary:
+            return Tile.King;
         default:
             return a;
     }
 }
 
-function away(a: Piece): Piece {
+function away(a: Tile): Tile {
     switch (a) {
-        case Piece.Castle:
-            return Piece.Throne;
-        case Piece.Sanctuary:
-            return Piece.Refuge;
+        case Tile.Castle:
+            return Tile.Throne;
+        case Tile.Sanctuary:
+            return Tile.Refuge;
         default:
-            return Piece.Empty;
+            return Tile.Empty;
     }
 }
 
-function into(a: Piece, b: Piece): Piece {
+function into(a: Tile, b: Tile): Tile {
     switch (b) {
-        case Piece.Throne:
-            return Piece.Castle;
-        case Piece.Refuge:
-            return Piece.Sanctuary;
+        case Tile.Throne:
+            return Tile.Castle;
+        case Tile.Refuge:
+            return Tile.Sanctuary;
         default:
             return a;
     }
 }
 
 export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
-    const piece = get(state, a);
+    const tile = get(state, a);
 
     const nextState = offsets.reduce((prevState, offset) => {
         const v = add(b, offset);
 
-        // The neighboring piece is not an enemy, this offset can not result
+        // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
         const neighbor = get(prevState, v);
-        if (!isEnemy(piece, neighbor)) {
+        if (!isEnemy(tile, neighbor)) {
             return prevState;
         }
 
         // Attackers may capture the king only when they have the king
         // surrounded on all four sides.
-        if (piece === Piece.Attacker && neighbor === Piece.King) {
+        if (tile === Tile.Attacker && neighbor === Tile.King) {
             const anvils = gets(prevState, offsets.map((o) => add(v, o)))
-                .filter((p) => p === Piece.Attacker);
+                .filter((p) => p === Tile.Attacker);
 
             // Three attackers already surround the king: this play will result
             // in it being surrounded on all four sides and captured.
@@ -130,12 +130,12 @@ export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
             return prevState;
         }
 
-        // The neighboring piece is an enemy: determine if it is being captured
+        // The neighboring tile is an enemy: determine if it is being captured
         // by checking the next tile across. When the "anvil" is either None
-        // or on the same side as the moving piece, the center piece is
+        // or on the same side as the moving tile, the center tile is
         // considered captured.
         const anvil = get(prevState, add(b, mul(offset, 2)));
-        if (side(anvil) === side(piece) || anvil === Piece.None) {
+        if (side(anvil) === side(tile) || anvil === Tile.None) {
             return capture(prevState, v);
         }
 
@@ -143,56 +143,56 @@ export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
     }, state);
 
     return merge(nextState, {
-        [key(a)]: away(piece),
-        [key(b)]: into(inside(piece), get(nextState, b)),
+        [key(a)]: away(tile),
+        [key(b)]: into(inside(tile), get(nextState, b)),
     });
 }
 
 export function victor(s: IBoard): Side | null {
     const ts = Object.values(s);
-    if (ts.includes(Piece.Sanctuary)) {
+    if (ts.includes(Tile.Sanctuary)) {
         return Side.Defenders;
     }
 
-    if (!(ts.includes(Piece.King))) {
+    if (!(ts.includes(Tile.King))) {
         return Side.Attackers;
     }
 
     return null;
 }
 
-function decode(t: Piece): string {
+function decode(t: Tile): string {
     switch (t) {
-        case Piece.Attacker:    return "A";
-        case Piece.Castle:      return "C";
-        case Piece.Defender:    return "D";
-        case Piece.Empty:       return "_";
-        case Piece.King:        return "K";
-        case Piece.None:        return "N";
-        case Piece.Refuge:      return "R";
-        case Piece.Sanctuary:   return "S";
-        case Piece.Throne:      return "T";
+        case Tile.Attacker:    return "A";
+        case Tile.Castle:      return "C";
+        case Tile.Defender:    return "D";
+        case Tile.Empty:       return "_";
+        case Tile.King:        return "K";
+        case Tile.None:        return "N";
+        case Tile.Refuge:      return "R";
+        case Tile.Sanctuary:   return "S";
+        case Tile.Throne:      return "T";
         default:                return " ";
     }
 }
 
-function encode(s: string): Piece {
+function encode(s: string): Tile {
     switch (s) {
-        case "A": return Piece.Attacker;
-        case "C": return Piece.Castle;
-        case "D": return Piece.Defender;
-        case "_": return Piece.Empty;
-        case "K": return Piece.King;
-        case "N": return Piece.None;
-        case "R": return Piece.Refuge;
-        case "S": return Piece.Sanctuary;
-        case "T": return Piece.Throne;
-        default:  return Piece.None;
+        case "A": return Tile.Attacker;
+        case "C": return Tile.Castle;
+        case "D": return Tile.Defender;
+        case "_": return Tile.Empty;
+        case "K": return Tile.King;
+        case "N": return Tile.None;
+        case "R": return Tile.Refuge;
+        case "S": return Tile.Sanctuary;
+        case "T": return Tile.Throne;
+        default:  return Tile.None;
     }
 }
 
 export function marshal(s: IBoard): string {
-    const result: Piece[][] = [];
+    const result: Tile[][] = [];
     Object.keys(s).forEach((k) => {
         const [x, y] = vec(k);
         if (!Array.isArray(result[y])) {
