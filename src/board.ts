@@ -17,7 +17,12 @@ function key(v: Vector): string {
 }
 
 function get(s: IBoard, v: Vector): Tile {
-    return s[key(v)] || Tile.None;
+    const t = s[key(v)];
+    if (t === undefined) {
+        return Tile.None;
+    }
+
+    return t;
 }
 
 function gets(s: IBoard, v: Vector[]): Tile[] {
