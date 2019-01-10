@@ -1,13 +1,21 @@
-import { IBoard } from "./board";
+import { IBoard, resolve } from "./board";
 import { Side } from "./side";
 
-export interface IState {
-    readonly board: IBoard;
-    readonly turn: Side;
-    readonly start: Side;
+interface IOptions {
+    board: IBoard;
+    start: Side;
 }
 
-export function opponent(side: Side): Side {
+interface IState {
+    board: IBoard;
+    turn: Side;
+    start: {
+        board: IBoard;
+        turn: Side;
+    };
+}
+
+function opponent(side: Side): Side {
     switch (side) {
         case Side.Attackers:
             return Side.Defenders;
@@ -16,4 +24,22 @@ export function opponent(side: Side): Side {
         case Side.None:
             throw new Error();
     }
+}
+
+export function createNew(options: IOptions): IState {
+    return {
+        board: options.board,
+        turn: options.start,
+        start: {
+            board: options.board,
+            turn: options.start,
+        },
+    };
+}
+
+export function play(s: IState, a: Vector, b: Vector): IState {
+    const nextState = { ...s };
+    nextState.board = resolve(nextState.board, a, b);
+    nextState.turn = opponent(nextState.turn);
+    return nextState;
 }
