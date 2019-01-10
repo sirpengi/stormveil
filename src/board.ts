@@ -175,7 +175,7 @@ function decode(t: Tile): string {
         case Tile.Refuge:      return "R";
         case Tile.Sanctuary:   return "S";
         case Tile.Throne:      return "T";
-        default:                return " ";
+        default:               return " ";
     }
 }
 
