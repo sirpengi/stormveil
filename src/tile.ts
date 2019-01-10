@@ -1,11 +1,11 @@
 export enum Tile {
     None,
-    Empty,
     Attacker,
-    Defender,
-    King,
     Castle,
+    Defender,
+    Empty,
+    King,
     Refuge,
-    Throne,
     Sanctuary,
+    Throne,
 }
