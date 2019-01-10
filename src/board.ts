@@ -29,8 +29,8 @@ function eq([ax, ay]: Vector, ...vs: Vector[]): boolean {
     return vs.every(([bx, by]) => ax === bx && ay === by);
 }
 
-function add(...v: Vector[]): Vector {
-    return v.reduce(([ax, ay], [bx, by]) => [ax + bx, ay + by], [0, 0]);
+function add(v: Vector, ...vs: Vector[]): Vector {
+    return vs.reduce(([ax, ay], [bx, by]) => [ax + bx, ay + by], v);
 }
 
 function mul([x, y]: Vector, i: number): Vector {
