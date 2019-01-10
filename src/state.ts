@@ -6,13 +6,13 @@ interface IOptions {
     start: Side;
 }
 
-interface IState {
+interface ISimpleState {
     board: IBoard;
     turn: Side;
-    start: {
-        board: IBoard;
-        turn: Side;
-    };
+}
+
+interface IState extends ISimpleState {
+    initial: ISimpleState;
 }
 
 function opponent(side: Side): Side {
@@ -30,7 +30,7 @@ export function createNew(options: IOptions): IState {
     return {
         board: options.board,
         turn: options.start,
-        start: {
+        initial: {
             board: options.board,
             turn: options.start,
         },

@@ -15,13 +15,13 @@ test("Shallow exercises for 'createNew' and 'play' state functions.", assert => 
 
     let s = createNew({ board, start });
     assert.deepEquals(s.board, board, "Board state reflects board passed in options.");
-    assert.deepEquals(s.start.board, board, "Initial board state is persisted immutably.");
-    assert.equals(s.start.turn, Side.Attackers, "Initial turn state is persisted immutably.");
+    assert.deepEquals(s.initial.board, board, "Initial board state is persisted immutably.");
+    assert.equals(s.initial.turn, Side.Attackers, "Initial turn state is persisted immutably.");
     assert.equals(s.turn, Side.Attackers, "Turn state reflects board passed in options.");
 
     s = play(s, [0, 2], [0, 1]);
-    assert.deepEquals(s.start.board, board, "Initial board state never changes.");
-    assert.equals(s.start.turn, Side.Attackers, "Initial turn state never changes.");
+    assert.deepEquals(s.initial.board, board, "Initial board state never changes.");
+    assert.equals(s.initial.turn, Side.Attackers, "Initial turn state never changes.");
     assert.equals(s.turn, Side.Defenders, "Turn state cycles between attackers and defenders after plays.");
 
     assert.end();
