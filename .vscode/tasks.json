@@ -4,7 +4,11 @@
         {
             "type": "npm",
             "script": "test",
-            "group": "test"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         },
         {
             "label": "watch web",
@@ -13,7 +17,8 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
         }
     ]
 }
