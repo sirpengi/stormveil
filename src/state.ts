@@ -16,7 +16,7 @@ interface IMove {
     b: Vector;
 }
 
-interface IState extends ISimpleState {
+export interface IState extends ISimpleState {
     history: IMove[];
     initial: ISimpleState;
 }

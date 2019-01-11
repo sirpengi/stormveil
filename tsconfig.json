@@ -10,11 +10,9 @@
         "strictBindCallApply": true,
         "noImplicitThis": true,
         "alwaysStrict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
         "esModuleInterop": true,
+        "jsx": "react",
         "lib": [
             "dom",
             "es5",

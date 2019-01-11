@@ -7,7 +7,7 @@ export interface IBoard {
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-function keyVec(s: string): Vector {
+export function keyVec(s: string): Vector {
     const [x, y] = s.split(",").map(Number);
     return [x, y];
 }
@@ -164,7 +164,7 @@ export function victor(s: IBoard): Side | null {
     return null;
 }
 
-function decode(t: Tile): string {
+export function encode(t: Tile): string {
     switch (t) {
         case Tile.Attacker:    return "A";
         case Tile.Castle:      return "C";
@@ -179,7 +179,7 @@ function decode(t: Tile): string {
     }
 }
 
-function encode(s: string): Tile {
+function decode(s: string): Tile {
     switch (s) {
         case "A": return Tile.Attacker;
         case "C": return Tile.Castle;
@@ -205,7 +205,7 @@ export function marshal(s: IBoard): string {
         result[y][x] = s[k];
     });
 
-    return result.map((r) => r.map(decode).join(" ")).join("\n");
+    return result.map((r) => r.map(encode).join(" ")).join("\n");
 }
 
 export function unmarshal(strings: TemplateStringsArray): IBoard {
@@ -216,5 +216,5 @@ export function unmarshal(strings: TemplateStringsArray): IBoard {
         .map((v) => v.split(""))
         .reduce((result, symbols, y) =>
             ({ ...result, ...symbols.reduce((dict, sym, x) =>
-                ({ ...dict, [key([x, y])]: encode(sym) }), {}) }), {});
+                ({ ...dict, [key([x, y])]: decode(sym) }), {}) }), {});
 }

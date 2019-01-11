@@ -5,11 +5,12 @@
     ],
     "jsRules": {},
     "rules": {
+        "arrow-parens": [false],
+        "no-angle-bracket-type-assertion": [false],
         "no-bitwise": [false],
         "no-namespace": [false],
         "object-literal-sort-keys": [false],
-        "ordered-imports": [false],
-        "arrow-parens": [false]
+        "ordered-imports": [false]
     },
     "rulesDirectory": []
 }

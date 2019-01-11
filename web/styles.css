@@ -1,0 +1,53 @@
+body {
+    font-family: sans-serif;
+}
+
+.MatchElements {
+    margin-left: 32px;
+    margin-top: 32px;
+    max-width: 265px;
+}
+
+.MatchElements__Participants {
+    display: flex;
+    justify-content: space-between;
+}
+
+.MatchElements__Participant {
+    color: #bbb;
+}
+
+.MatchElements__Participant--active {
+    color: #000;
+}
+
+.MatchElements__Board {
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    height: 264px;
+    width: 264px;
+}
+
+.MatchElements__BoardTileRow {
+    display: flex;
+}
+
+.MatchElements__BoardTile {
+    align-items: center;
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    cursor: default;
+    display: flex;
+    font-family: 'Consolas', monospace;
+    height: 24px;
+    justify-content: center;
+    text-align: center;
+    white-space: pre;
+    width: 24px;
+}
+
+.MatchElements__BoardTile--selectable {
+    cursor: pointer;
+}
