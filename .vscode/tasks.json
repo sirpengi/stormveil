@@ -4,14 +4,12 @@
         {
             "type": "npm",
             "script": "test",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
+            "group": "test"
         },
         {
-            "type": "npm",
-            "script": "web",
+            "label": "watch web",
+            "type": "shell",
+            "command": "npm run web -- --watch",
             "group": {
                 "kind": "build",
                 "isDefault": true
