@@ -1,5 +1,6 @@
 import test from "tape";
-import { IBoard, key, marshal, moves, resolve, unmarshal, victor } from "./board";
+import { key, marshal, moves, resolve, unmarshal, victor } from "./board";
+import hnefatafl from "./boards/hnefatafl";
 import { Side } from "./side";
 
 test("Board captures and moves", (assert) => {
@@ -225,6 +226,74 @@ test("Win conditions", (assert) => {
     tests.forEach(([message, board, expected]) => {
         const actual = victor(unmarshal(board));
         assert.equals(actual, expected, message);
+    });
+
+    assert.end();
+});
+
+test("Generating legal moves", assert => {
+    const indexed = (vs: Vector[]) =>
+        vs.reduce((r, v) => ({ ...r, [key(v)]: true }), {});
+
+    const tests: Array<[string, Vector, Vector[]]> = [
+        [`A D`, [0, 0], []],
+        [`A K`, [0, 0], []],
+        [`D A`, [0, 0], []],
+        [`D K`, [0, 0], []],
+        [`D _`, [0, 0], [[1, 0]]],
+        [`A _`, [0, 0], [[1, 0]]],
+        [`K R`, [0, 0], [[1, 0]]],
+        [`K T`, [0, 0], [[1, 0]]],
+        [`C R`, [0, 0], [[1, 0]]],
+        [`C T`, [0, 0], [[1, 0]]],
+        [`S R`, [0, 0], [[1, 0]]],
+        [`S T`, [0, 0], [[1, 0]]],
+        [`A D _`, [0, 0], []],
+        [`D D _`, [0, 0], []],
+        [`K D _`, [0, 0], []],
+        [`C D _`, [0, 0], []],
+        [`S D _`, [0, 0], []],
+        [`A _ A`, [0, 0], [[1, 0]]],
+        [`A _ D`, [0, 0], [[1, 0]]],
+        [`A _ K`, [0, 0], [[1, 0]]],
+        [`A _ C`, [0, 0], [[1, 0]]],
+        [`A _ S`, [0, 0], [[1, 0]]],
+        [`D _ A`, [0, 0], [[1, 0]]],
+        [`D _ D`, [0, 0], [[1, 0]]],
+        [`D _ K`, [0, 0], [[1, 0]]],
+        [`D _ C`, [0, 0], [[1, 0]]],
+        [`D _ S`, [0, 0], [[1, 0]]],
+        [`K _ A`, [0, 0], [[1, 0]]],
+        [`K _ D`, [0, 0], [[1, 0]]],
+        [`K _ K`, [0, 0], [[1, 0]]],
+        [`K _ C`, [0, 0], [[1, 0]]],
+        [`K _ S`, [0, 0], [[1, 0]]],
+        [`A _ _`, [0, 0], [[1, 0], [2, 0]]],
+        [`D _ _`, [0, 0], [[1, 0], [2, 0]]],
+        [`K _ _`, [0, 0], [[1, 0], [2, 0]]],
+        [`C _ _`, [0, 0], [[1, 0], [2, 0]]],
+        [`S _ _`, [0, 0], [[1, 0], [2, 0]]],
+        [`_ A _`, [1, 0], [[2, 0], [0, 0]]],
+        [`_ D _`, [1, 0], [[2, 0], [0, 0]]],
+        [`_ K _`, [1, 0], [[2, 0], [0, 0]]],
+        [`_ C _`, [1, 0], [[2, 0], [0, 0]]],
+        [`_ S _`, [1, 0], [[2, 0], [0, 0]]],
+        [`_ _ A`, [2, 0], [[1, 0], [0, 0]]],
+        [`_ _ D`, [2, 0], [[1, 0], [0, 0]]],
+        [`_ _ K`, [2, 0], [[1, 0], [0, 0]]],
+        [`_ _ C`, [2, 0], [[1, 0], [0, 0]]],
+        [`_ _ S`, [2, 0], [[1, 0], [0, 0]]],
+        [hnefatafl, [5, 5], []],
+        [hnefatafl, [3, 0], [[2, 0], [1, 0], [3, 1], [3, 2], [3, 3], [3, 4]]],
+        [hnefatafl, [4, 4], [[4, 3], [4, 2], [4, 1], [3, 4], [2, 4], [1, 4]]],
+    ];
+
+    tests.forEach(([board, vector, expected]) => {
+        const actual = moves(unmarshal(board), vector);
+        assert.deepEquals(
+            indexed(actual),
+            indexed(expected),
+        );
     });
 
     assert.end();

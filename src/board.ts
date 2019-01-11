@@ -12,7 +12,7 @@ export function keyVec(s: string): Vector {
     return [x, y];
 }
 
-function key(v: Vector): string {
+export function key(v: Vector): string {
     return v.toString();
 }
 
@@ -49,7 +49,7 @@ function capture(s: IBoard, v: Vector): IBoard {
     return merge(s, remove(s, (key(v))), { [key(v)]: away(get(s, v)) });
 }
 
-function side(t: Tile): Side {
+export function side(t: Tile): Side {
     switch (t) {
         case Tile.Defender:
         case Tile.King:
@@ -162,6 +162,37 @@ export function victor(s: IBoard): Side | null {
     }
 
     return null;
+}
+
+function allowed(t: Tile, u: Tile): boolean {
+    if (u === Tile.Empty) {
+        return true;
+    }
+
+    if ((t === Tile.King || t === Tile.Castle || t === Tile.Sanctuary) &&
+        (u === Tile.Throne || u === Tile.Refuge)) {
+        return true;
+    }
+
+    return false;
+}
+
+export function moves(s: IBoard, a: Vector): Vector[] {
+    const m = [];
+    const t = get(s, a);
+    for (const offset of offsets) {
+        for (let k = 1; k < Infinity; k += 1) {
+            const b = add(a, mul(offset, k));
+            if (allowed(t, get(s, b))) {
+                m.push(b);
+                continue;
+            }
+
+            break;
+        }
+    }
+
+    return m;
 }
 
 export function encode(t: Tile): string {
