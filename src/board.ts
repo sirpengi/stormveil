@@ -239,7 +239,7 @@ export function marshal(s: IBoard): string {
     return result.map((r) => r.map(encode).join(" ")).join("\n");
 }
 
-export function unmarshal(s: string): IBoard {
+export function unmarshal(s: BoardTemplate): IBoard {
     return s.trim()
         .replace(/ /g, "")
         .split(/\n/g)

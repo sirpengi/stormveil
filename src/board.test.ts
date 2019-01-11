@@ -4,7 +4,7 @@ import hnefatafl from "./boards/hnefatafl";
 import { Side } from "./side";
 
 test("Board captures and moves", (assert) => {
-    const tests: Array<[string, string, string, Vector, Vector]> = [
+    const tests: Array<[string, BoardTemplate, string, Vector, Vector]> = [
         [
             "Move without capture one space to the east.",
             `A _`,
@@ -193,7 +193,7 @@ test("Board captures and moves", (assert) => {
 });
 
 test("Win conditions", (assert) => {
-    const tests: Array<[string, string, Side | null]> = [
+    const tests: Array<[string, BoardTemplate, Side | null]> = [
         [
             "Attackers win.",
             `
@@ -235,7 +235,7 @@ test("Generating legal moves", assert => {
     const indexed = (vs: Vector[]) =>
         vs.reduce((r, v) => ({ ...r, [key(v)]: true }), {});
 
-    const tests: Array<[string, Vector, Vector[]]> = [
+    const tests: Array<[BoardTemplate, Vector, Vector[]]> = [
         [`A D`, [0, 0], []],
         [`A K`, [0, 0], []],
         [`D A`, [0, 0], []],
