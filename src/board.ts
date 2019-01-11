@@ -208,9 +208,8 @@ export function marshal(s: IBoard): string {
     return result.map((r) => r.map(encode).join(" ")).join("\n");
 }
 
-export function unmarshal(strings: TemplateStringsArray): IBoard {
-    return strings[0]
-        .trim()
+export function unmarshal(s: string): IBoard {
+    return s.trim()
         .replace(/ /g, "")
         .split(/\n/g)
         .map((v) => v.split(""))
