@@ -6,7 +6,7 @@ import typescript from "rollup-plugin-typescript";
 export default {
     input: "src/main.ts",
     output: {
-        file: "web/dist/application.js",
+        file: "web/dist/ui.bundle.js",
         format: "iife"
     },
     plugins: [

@@ -4,15 +4,21 @@
   "description": "",
   "main": "src/main.ts",
   "scripts": {
-    "web": "rollup --config rollup.config.js",
-    "test": "tsc && tape build/**/*.test.js"
+    "compile-browser-test": "rollup --config conf/test.js --sourcemap",
+    "compile-browser": "rollup --config conf/ui.js --sourcemap",
+    "test": "tsc && tape build/test.js"
   },
   "author": "Samuel Ferrell",
   "license": "MIT",
   "devDependencies": {
+    "@types/classnames": "^2.2.7",
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
     "@types/tape": "^4.2.33",
     "rollup": "^1.1.0",
     "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-typescript": "^1.0.0",
@@ -21,9 +27,6 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "@types/classnames": "^2.2.7",
-    "@types/react": "^16.7.18",
-    "@types/react-dom": "^16.0.11",
     "classnames": "^2.2.6",
     "react": "^16.7.0",
     "react-dom": "^16.7.0"

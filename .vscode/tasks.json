@@ -9,16 +9,6 @@
                 "isDefault": true
             },
             "problemMatcher": []
-        },
-        {
-            "label": "watch web",
-            "type": "shell",
-            "command": "npm run web -- --watch",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
         }
     ]
 }

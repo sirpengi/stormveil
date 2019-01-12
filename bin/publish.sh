@@ -1,8 +1,8 @@
 npm install
-npm run web
+npm run compile-browser
 git checkout gh-pages
-cp ./web/dist/application.js ./dist/application.js
-git add ./dist/application.js
+cp ./web/dist/ui.bundle.js ./dist/ui.bundle.js
+git add ./dist/ui.bundle.js
 git commit --allow-empty -m "Publish to gh-pages."
 git push origin gh-pages
 git checkout master
