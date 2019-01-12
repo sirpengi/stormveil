@@ -95,6 +95,7 @@ export default class Root extends React.Component<{}, IRootState> {
         return (
             <div className="MatchElements">
                 {this.renderParticipants()}
+                <div>Hello</div>
                 <div className="MatchElements__Board">
                     {this.renderTiles()}
                 </div>
