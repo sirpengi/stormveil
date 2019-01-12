@@ -21,7 +21,7 @@ export interface IState extends ISimpleState {
     initial: ISimpleState;
 }
 
-function opponent(side: Side): Side {
+export function opponent(side: Side): Side {
     switch (side) {
         case Side.Attackers:
             return Side.Defenders;
