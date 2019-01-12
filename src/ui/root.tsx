@@ -15,7 +15,7 @@ export default class Root extends React.Component<{}, IRootState> {
         this.state = {
             game: createNew({
                 start: Side.Attackers,
-                board: unmarshal`
+                board: unmarshal(`
                     R _ _ A A A A A _ _ R
                     _ _ _ _ _ A _ _ _ _ _
                     _ _ _ _ _ _ _ _ _ _ _
@@ -27,7 +27,7 @@ export default class Root extends React.Component<{}, IRootState> {
                     _ _ _ _ _ _ _ _ _ _ _
                     _ _ _ _ _ A _ _ _ _ _
                     R _ _ A A A A A _ _ R
-                `,
+                `),
             }),
         };
     }
