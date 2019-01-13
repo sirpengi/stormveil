@@ -3,10 +3,12 @@ import { Side } from "./side";
 import { opponent } from "./state";
 import { Tile } from "./tile";
 
+type Move = [Vector, Vector];
+
 interface IStateTree {
+    state: IBoard;
     turn: Side;
-    move: [Vector, Vector] | null;
-    score: number;
+    move: Move | null;
     nodes: IStateTree[];
 }
 
@@ -31,39 +33,37 @@ function score(board: IBoard, turn: Side): number {
     return sum;
 }
 
-function createTree(board: IBoard, move: [Vector, Vector] | null, turn: Side, depth: number): IStateTree {
-    if (depth > 1) {
-        return { turn: turn, move: move, score: score(board, turn), nodes: [] };
-    }
-
+function createTree(board: IBoard, move: Move | null, turn: Side, depth: number, max: number): IStateTree {
     const nodes: IStateTree[] = [];
-    const keys = Object.keys(board);
-    for (const key of keys) {
-        if (side(board[key]) !== turn) {
-            continue;
-        }
+    if (depth < max) {
+        const keys = Object.keys(board);
+        for (const key of keys) {
+            if (side(board[key]) !== turn) {
+                continue;
+            }
 
-        const kv = keyVec(key);
-        const mvs = moves(board, kv);
-        if (mvs.length === 0) {
-            continue;
-        }
+            const kv = keyVec(key);
+            const mvs = moves(board, kv);
+            if (mvs.length === 0) {
+                continue;
+            }
 
-        for (const mv of mvs) {
-            const b = resolve(board, kv, mv);
-            const t = createTree(b, [kv, mv], opponent(turn), depth + 1);
-            nodes.push(t);
+            for (const mv of mvs) {
+                const b = resolve(board, kv, mv);
+                const t = createTree(b, [kv, mv], opponent(turn), depth + 1, max);
+                nodes.push(t);
+            }
         }
     }
 
     return {
+        state: board,
         turn: turn,
         move: move,
-        score: score(board, turn),
         nodes: nodes,
     };
 }
 
-export function createNewTree(board: IBoard, turn: Side): IStateTree {
-    return createTree(board, null, turn, 0);
+export function createNewTree(board: IBoard, turn: Side, depth: number = 2): IStateTree {
+    return createTree(board, null, turn, 0, depth);
 }
