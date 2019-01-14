@@ -1,12 +1,12 @@
 import test from "tape";
-import { createNewTree } from "./ai";
+import { best } from "./ai";
 import { unmarshal } from "./board";
 import hnefatafl from "./boards/hnefatafl";
 import { Side } from "./side";
 
-test("Create state tree", assert => {
-    console.profile("stormveil");
-    createNewTree(unmarshal(hnefatafl), Side.Attackers);
+test.skip("Create state tree", assert => {
+    console.profile();
+    const b = best(unmarshal(hnefatafl), Side.Defenders, 3);
     console.profileEnd();
     assert.end();
 });
