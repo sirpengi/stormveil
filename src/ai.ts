@@ -33,9 +33,9 @@ function score(board: IBoard, turn: Side): number {
     return sum;
 }
 
-function createTree(board: IBoard, move: Move | null, turn: Side, depth: number, max: number): IStateTree {
+function createTree(board: IBoard, move: Move | null, turn: Side, depth: number): IStateTree {
     const nodes: IStateTree[] = [];
-    if (depth < max) {
+    if (depth > 0) {
         const keys = Object.keys(board);
         for (const key of keys) {
             if (side(board[key]) !== turn) {
@@ -50,7 +50,7 @@ function createTree(board: IBoard, move: Move | null, turn: Side, depth: number,
 
             for (const mv of mvs) {
                 const b = resolve(board, kv, mv);
-                const t = createTree(b, [kv, mv], opponent(turn), depth + 1, max);
+                const t = createTree(b, [kv, mv], opponent(turn), depth - 1);
                 nodes.push(t);
             }
         }
@@ -65,5 +65,5 @@ function createTree(board: IBoard, move: Move | null, turn: Side, depth: number,
 }
 
 export function createNewTree(board: IBoard, turn: Side, depth: number = 2): IStateTree {
-    return createTree(board, null, turn, 0, depth);
+    return createTree(board, null, turn, depth);
 }
