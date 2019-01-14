@@ -5,17 +5,16 @@ import { Tile } from "./tile";
 
 type Move = [Vector, Vector];
 
-interface IStateTree {
+interface IStateNode {
     state: IBoard;
     turn: Side;
     move: Move | null;
-    nodes: IStateTree[];
+    nodes: IStateNode[];
 }
 
 function score(board: IBoard, turn: Side): number {
-    const ts = Object.values(board);
     let sum = 0;
-    for (const t of ts) {
+    for (const t of Object.values(board)) {
         if (t === Tile.Empty
             || t === Tile.Throne
             || t === Tile.Refuge
@@ -33,8 +32,8 @@ function score(board: IBoard, turn: Side): number {
     return sum;
 }
 
-function createTree(board: IBoard, move: Move | null, turn: Side, depth: number): IStateTree {
-    const nodes: IStateTree[] = [];
+function createTree(board: IBoard, move: Move | null, turn: Side, depth: number): IStateNode {
+    const nodes: IStateNode[] = [];
     if (depth > 0) {
         const keys = Object.keys(board);
         for (const key of keys) {
@@ -64,6 +63,42 @@ function createTree(board: IBoard, move: Move | null, turn: Side, depth: number)
     };
 }
 
-export function createNewTree(board: IBoard, turn: Side, depth: number = 2): IStateTree {
-    return createTree(board, null, turn, depth);
+function minimax(tree: IStateNode, maximizing: boolean): number {
+    const { nodes, turn, state } = tree;
+    if (nodes.length === 0) {
+        return score(state, turn);
+    }
+
+    const fn = maximizing ? Math.max : Math.min;
+    const initialScore: number = maximizing ? -Infinity : Infinity;
+    return nodes.reduce((result, node) =>
+        fn(result, minimax(node, !maximizing)), initialScore);
+}
+
+type NodeScoreResult = [IStateNode, number];
+
+function searchBestNode(tree: IStateNode): IStateNode {
+    const [initialNode, ...rest] = tree.nodes;
+    const initialValue: NodeScoreResult = [initialNode, minimax(initialNode, true)];
+    const [bestNode] = rest.reduce<NodeScoreResult>((result, node) => {
+        const [ prevNode, prevValue ] = result;
+        const value = minimax(node, true);
+        if (value > prevValue) {
+            return [node, value];
+        }
+
+        return [prevNode, prevValue];
+    }, initialValue);
+
+    return bestNode;
+}
+
+export function best(board: IBoard, turn: Side, depth: number): Move {
+    const tree = createTree(board, null, turn, depth);
+    const result = searchBestNode(tree);
+    if (result.move == null) {
+        throw new Error("Unexpected null move value.");
+    }
+
+    return result.move;
 }
