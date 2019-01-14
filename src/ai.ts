@@ -14,7 +14,9 @@ interface IStateNode {
 
 function score(board: IBoard, turn: Side): number {
     let sum = 0;
-    for (const t of Object.values(board)) {
+    for (const k in board) {
+        const t = board[k];
+
         if (t === Tile.Empty
             || t === Tile.Throne
             || t === Tile.Refuge
@@ -35,8 +37,7 @@ function score(board: IBoard, turn: Side): number {
 function createTree(board: IBoard, move: Move | null, turn: Side, depth: number): IStateNode {
     const nodes: IStateNode[] = [];
     if (depth > 0) {
-        const keys = Object.keys(board);
-        for (const key of keys) {
+        for (const key in board) {
             if (side(board[key]) !== turn) {
                 continue;
             }

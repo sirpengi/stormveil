@@ -12,8 +12,8 @@ export function keyVec(s: string): Vector {
     return [x, y];
 }
 
-export function key(v: Vector): string {
-    return v.toString();
+export function key([x, y]: Vector): string {
+    return x + "," + y;
 }
 
 function get(s: IBoard, v: Vector): Tile {
@@ -38,7 +38,17 @@ function mul([x, y]: Vector, i: number): Vector {
 }
 
 function merge(...s: IBoard[]): IBoard {
-    return s.reduce((a, b) => ({ ...a, ...b }), {});
+    const r: IBoard = {};
+
+    let b;
+    let k;
+    for (b of s) {
+        for (k in b) {
+            r[k] = b[k];
+        }
+    }
+
+    return r;
 }
 
 function remove<K extends string>({ [k]: _, ...dict }: IBoard, k: K): Omit<IBoard, K> {
@@ -46,7 +56,7 @@ function remove<K extends string>({ [k]: _, ...dict }: IBoard, k: K): Omit<IBoar
 }
 
 function capture(s: IBoard, v: Vector): IBoard {
-    return merge(s, remove(s, (key(v))), { [key(v)]: away(get(s, v)) });
+    return merge(remove(s, key(v)), { [key(v)]: away(get(s, v)) });
 }
 
 export function side(t: Tile): Side {
