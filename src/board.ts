@@ -51,12 +51,8 @@ function merge(...s: IBoard[]): IBoard {
     return r;
 }
 
-function remove<K extends string>({ [k]: _, ...dict }: IBoard, k: K): Omit<IBoard, K> {
-    return dict;
-}
-
 function capture(s: IBoard, v: Vector): IBoard {
-    return merge(remove(s, key(v)), { [key(v)]: away(get(s, v)) });
+    return merge(s, { [key(v)]: away(get(s, v)) });
 }
 
 export function side(t: Tile): Side {
