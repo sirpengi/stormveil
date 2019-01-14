@@ -63,7 +63,7 @@ function createTree(board: IBoard, move: Move | null, turn: Side, depth: number)
     };
 }
 
-function minimax(tree: IStateNode, maximizing: boolean): number {
+function minimax(tree: IStateNode, maximizing: boolean = true): number {
     const { nodes, turn, state } = tree;
     if (nodes.length === 0) {
         return score(state, turn);
@@ -78,11 +78,11 @@ function minimax(tree: IStateNode, maximizing: boolean): number {
 type NodeScoreResult = [IStateNode, number];
 
 function searchBestNode(tree: IStateNode): IStateNode {
-    const [initialNode, ...rest] = tree.nodes;
-    const initialValue: NodeScoreResult = [initialNode, minimax(initialNode, true)];
-    const [bestNode] = rest.reduce<NodeScoreResult>((result, node) => {
+    const [ initialNode, ...rest ] = tree.nodes;
+    const initialValue: NodeScoreResult = [initialNode, minimax(initialNode)];
+    const [ bestNode ] = rest.reduce<NodeScoreResult>((result, node) => {
         const [ prevNode, prevValue ] = result;
-        const value = minimax(node, true);
+        const value = minimax(node);
         if (value > prevValue) {
             return [node, value];
         }
