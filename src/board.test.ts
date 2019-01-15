@@ -1,7 +1,6 @@
 import test from "tape";
-import { key, marshal, moves, resolve, unmarshal, victor } from "./board";
+import { marshal, moves, resolve, unmarshal } from "./board";
 import hnefatafl from "./boards/hnefatafl";
-import { Side } from "./side";
 
 test("Board captures and moves", (assert) => {
     const tests: Array<[string, BoardTemplate, string, Vector, Vector]> = [
@@ -192,48 +191,9 @@ test("Board captures and moves", (assert) => {
     assert.end();
 });
 
-test("Win conditions", (assert) => {
-    const tests: Array<[string, BoardTemplate, Side | null]> = [
-        [
-            "Attackers win.",
-            `
-                A _ _
-                _ _ A
-                _ D _
-            `,
-            Side.Attackers,
-        ],
-        [
-            "Defenders win.",
-            `
-                S _ A
-                D _ _
-                _ A A
-            `,
-            Side.Defenders,
-        ],
-        [
-            "No victor.",
-            `
-                K _ _ R
-                D _ A _
-                D A _ _
-            `,
-            null,
-        ],
-    ];
-
-    tests.forEach(([message, board, expected]) => {
-        const actual = victor(unmarshal(board));
-        assert.equals(actual, expected, message);
-    });
-
-    assert.end();
-});
-
 test("Generating legal moves", assert => {
     const indexed = (vs: Vector[]) =>
-        vs.reduce((r, v) => ({ ...r, [key(v)]: true }), {});
+        vs.reduce((r, v) => ({ ...r, [v.toString()]: true }), {});
 
     const tests: Array<[BoardTemplate, Vector, Vector[]]> = [
         [`A D`, [0, 0], []],

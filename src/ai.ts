@@ -1,4 +1,4 @@
-import { IBoard, keyVec, moves, resolve, side } from "./board";
+import { vec, IBoard, moves, resolve, side } from "./board";
 import { Side } from "./side";
 import { opponent } from "./state";
 import { Tile } from "./tile";
@@ -14,9 +14,9 @@ interface IStateNode {
 
 function score(board: IBoard, turn: Side): number {
     let sum = 0;
-    for (const k in board) {
-        const t = board[k];
-
+    let i;
+    for (i = 0; i < board.data.length; i += 1) {
+        const t = board.data[i];
         if (t === Tile.Empty
             || t === Tile.Throne
             || t === Tile.Refuge
@@ -37,12 +37,13 @@ function score(board: IBoard, turn: Side): number {
 function createTree(board: IBoard, move: Move | null, turn: Side, depth: number): IStateNode {
     const nodes: IStateNode[] = [];
     if (depth > 0) {
-        for (const key in board) {
-            if (side(board[key]) !== turn) {
+        for (let i = 0; i < board.data.length; i += 1) {
+            const tile = board.data[i];
+            if (side(tile) !== turn) {
                 continue;
             }
 
-            const kv = keyVec(key);
+            const kv = vec(board.width, i);
             const mvs = moves(board, kv);
             if (mvs.length === 0) {
                 continue;
@@ -71,9 +72,14 @@ function minimax(tree: IStateNode, maximizing: boolean = true): number {
     }
 
     const fn = maximizing ? Math.max : Math.min;
-    const initialScore: number = maximizing ? -Infinity : Infinity;
-    return nodes.reduce((result, node) =>
-        fn(result, minimax(node, !maximizing)), initialScore);
+
+    let result = maximizing ? -Infinity : Infinity;
+    for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        result = fn(result, minimax(node, !maximizing));
+    }
+
+    return result;
 }
 
 type NodeScoreResult = [IStateNode, number];

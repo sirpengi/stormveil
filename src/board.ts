@@ -1,23 +1,42 @@
 import { Side } from "./side";
 import { Tile } from "./tile";
 
+type BoardRepresentation = Tile[];
+
 export interface IBoard {
-    [key: string]: Tile;
+    data: BoardRepresentation;
+    width: number;
 }
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-export function keyVec(s: string): Vector {
-    const [x, y] = s.split(",").map(Number);
-    return [x, y];
+function flat<T>([first, ...rest]: T[][]): T[] {
+    return rest.reduce((result, coll) => result.concat(coll), first);
 }
 
-export function key([x, y]: Vector): string {
-    return x + "," + y;
+function partition<T>(coll: T[], size: number): T[][] {
+    const result = [];
+    for (let i = 0; i < coll.length; i += size) {
+        result.push(coll.slice(i, i + size));
+    }
+
+    return result;
 }
 
-function get(s: IBoard, v: Vector): Tile {
-    const t = s[key(v)];
+function clone(s: IBoard): IBoard {
+    return { data: s.data.slice(), width: s.width };
+}
+
+export function vec(w: number, i: number): Vector {
+    return [i % w, Math.floor(i / w)];
+}
+
+function key(w: number, x: number, y: number): number {
+    return w * y + x;
+}
+
+function get(s: IBoard, x: number, y: number): Tile {
+    const t = s.data[key(s.width, x, y)];
     if (t === undefined) {
         return Tile.None;
     }
@@ -25,34 +44,12 @@ function get(s: IBoard, v: Vector): Tile {
     return t;
 }
 
-function eq([ax, ay]: Vector, ...vs: Vector[]): boolean {
-    return vs.every(([bx, by]) => ax === bx && ay === by);
+function set(s: IBoard, x: number, y: number, t: Tile): void {
+    s.data[key(s.width, x, y)] = t;
 }
 
-function add(v: Vector, ...vs: Vector[]): Vector {
-    return vs.reduce(([ax, ay], [bx, by]) => [ax + bx, ay + by], v);
-}
-
-function mul([x, y]: Vector, i: number): Vector {
-    return [x * i, y * i];
-}
-
-function merge(...s: IBoard[]): IBoard {
-    const r: IBoard = {};
-
-    let b;
-    let k;
-    for (b of s) {
-        for (k in b) {
-            r[k] = b[k];
-        }
-    }
-
-    return r;
-}
-
-function capture(s: IBoard, v: Vector): IBoard {
-    return merge(s, { [key(v)]: away(get(s, v)) });
+function capture(s: IBoard, x: number, y: number): void {
+    set(s, x, y, away(get(s, x, y)));
 }
 
 export function side(t: Tile): Side {
@@ -113,61 +110,47 @@ function into(a: Tile, b: Tile): Tile {
     }
 }
 
-export function resolve(state: IBoard, a: Vector, b: Vector): IBoard {
-    const tile = get(state, a);
+export function resolve(state: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
+    const tile = get(state, ax, ay);
+    const nextState = clone(state);
+    set(nextState, ax, ay, away(tile));
+    set(nextState, bx, by, into(inside(tile), get(nextState, bx, by)));
 
-    const nextState = offsets.reduce((prevState, offset) => {
-        const c = add(b, offset);
+    for (let i = 0; i < 4; i += 1) {
+        const ox = offsets[i][0];
+        const oy = offsets[i][1];
+        const cx = bx + ox;
+        const cy = by + oy;
 
         // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
-        const neighbor = get(prevState, c);
+        const neighbor = get(nextState, cx, cy);
         if (!hostile(tile, neighbor)) {
-            return prevState;
-        }
-
-        // Attackers may capture the king only when they have the king
-        // surrounded on all four sides.
-        if (tile === Tile.Attacker && neighbor === Tile.King) {
-            const anvils = offsets.map(v => add(c, v)).filter(v => !eq(b, v)).map(v => get(prevState, v));
-            if (anvils.every(t => t === Tile.Attacker)) {
-                return capture(prevState, c);
-            }
-
-            // The king is not totally surrounded, return early to avoid the
-            // common capture logic below.
-            return prevState;
+            continue;
         }
 
         // The neighboring tile is an enemy: determine if it is being captured
         // by checking the next tile across. When the "anvil" is either None
         // or on the same side as the moving tile, the center tile is
         // considered captured.
-        const anvil = get(prevState, add(b, mul(offset, 2)));
-        if (hostile(neighbor, anvil)) {
-            return capture(prevState, c);
+        const anvil = get(nextState, bx + (ox * 2), by + (oy * 2));
+        if (hostile(neighbor, anvil) && neighbor !== Tile.King) {
+            capture(nextState, cx, cy);
         }
 
-        return prevState;
-    }, state);
-
-    return merge(nextState, {
-        [key(a)]: away(tile),
-        [key(b)]: into(inside(tile), get(nextState, b)),
-    });
-}
-
-export function victor(s: IBoard): Side | null {
-    const ts = Object.values(s);
-    if (ts.includes(Tile.Sanctuary)) {
-        return Side.Defenders;
+        // Attackers may capture the king only when they have the king
+        // surrounded on all four sides.
+        if (tile === Tile.Attacker &&
+            neighbor === Tile.King &&
+            get(nextState, cx, cy + 1) === Tile.Attacker &&
+            get(nextState, cx, cy - 1) === Tile.Attacker &&
+            get(nextState, cx + 1, cy) === Tile.Attacker &&
+            get(nextState, cx - 1, cy) === Tile.Attacker) {
+            capture(nextState, cx, cy);
+        }
     }
 
-    if (!(ts.includes(Tile.King))) {
-        return Side.Attackers;
-    }
-
-    return null;
+    return nextState;
 }
 
 function allowed(t: Tile, u: Tile): boolean {
@@ -183,14 +166,17 @@ function allowed(t: Tile, u: Tile): boolean {
     return false;
 }
 
-export function moves(s: IBoard, a: Vector): Vector[] {
+export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
     const m = [];
-    const t = get(s, a);
-    for (const offset of offsets) {
+    const t = get(s, ax, ay);
+
+    for (let i = 0; i < offsets.length; i += 1) {
+        const [ ox, oy ] = offsets[i];
         for (let k = 1; k < Infinity; k += 1) {
-            const b = add(a, mul(offset, k));
-            if (allowed(t, get(s, b))) {
-                m.push(b);
+            const bx = ax + (ox * k);
+            const by = ay + (oy * k);
+            if (allowed(t, get(s, bx, by))) {
+                m.push([bx, by] as Vector);
                 continue;
             }
 
@@ -232,25 +218,20 @@ function decode(s: string): Tile {
 }
 
 export function marshal(s: IBoard): string {
-    const result: Tile[][] = [];
-    Object.keys(s).forEach((k) => {
-        const [x, y] = keyVec(k);
-        if (!Array.isArray(result[y])) {
-            result[y] = [];
-        }
-
-        result[y][x] = s[k];
-    });
-
-    return result.map((r) => r.map(encode).join(" ")).join("\n");
+    const tiles = s.data.map(n => encode(n));
+    return partition(tiles, s.width)
+        .map(r => r.join(" "))
+        .join("\n");
 }
 
 export function unmarshal(s: BoardTemplate): IBoard {
-    return s.trim()
+    const tiles = s
+        .trim()
         .replace(/ /g, "")
         .split(/\n/g)
-        .map((v) => v.split(""))
-        .reduce((result, symbols, y) =>
-            ({ ...result, ...symbols.reduce((dict, sym, x) =>
-                ({ ...dict, [key([x, y])]: decode(sym) }), {}) }), {});
+        .map(v => v.split(""))
+        .map(v => v.map(decode));
+
+    const [ sample ] = tiles;
+    return { data: flat(tiles), width: sample.length };
 }
