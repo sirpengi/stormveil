@@ -122,11 +122,11 @@ function into(a: Tile, b: Tile): Tile {
     }
 }
 
-export function resolve(state: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
-    const tile = get(state, ax, ay);
-    const nextState = clone(state);
-    set(nextState, ax, ay, away(tile));
-    set(nextState, bx, by, into(inside(tile), get(nextState, bx, by)));
+export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
+    const tile = get(s, ax, ay);
+    const state = clone(s);
+    set(state, ax, ay, away(tile));
+    set(state, bx, by, into(inside(tile), get(state, bx, by)));
 
     for (let i = 0; i < 4; i += 1) {
         const ox = offsets[i][0];
@@ -136,7 +136,7 @@ export function resolve(state: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoa
 
         // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
-        const neighbor = get(nextState, cx, cy);
+        const neighbor = get(state, cx, cy);
         if (!capturable(neighbor) || !hostile(tile, neighbor)) {
             continue;
         }
@@ -145,24 +145,24 @@ export function resolve(state: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoa
         // by checking the next tile across. When the "anvil" is either None
         // or on the same side as the moving tile, the center tile is
         // considered captured.
-        const anvil = get(nextState, bx + (ox * 2), by + (oy * 2));
+        const anvil = get(state, bx + (ox * 2), by + (oy * 2));
         if (hostile(neighbor, anvil) && neighbor !== Tile.King) {
-            capture(nextState, cx, cy);
+            capture(state, cx, cy);
         }
 
         // Attackers may capture the king only when they have the king
         // surrounded on all four sides.
         if (tile === Tile.Attacker &&
             neighbor === Tile.King &&
-            get(nextState, cx, cy + 1) === Tile.Attacker &&
-            get(nextState, cx, cy - 1) === Tile.Attacker &&
-            get(nextState, cx + 1, cy) === Tile.Attacker &&
-            get(nextState, cx - 1, cy) === Tile.Attacker) {
-            capture(nextState, cx, cy);
+            get(state, cx, cy + 1) === Tile.Attacker &&
+            get(state, cx, cy - 1) === Tile.Attacker &&
+            get(state, cx + 1, cy) === Tile.Attacker &&
+            get(state, cx - 1, cy) === Tile.Attacker) {
+            capture(state, cx, cy);
         }
     }
 
-    return nextState;
+    return state;
 }
 
 function allowed(t: Tile, u: Tile): boolean {
