@@ -4,11 +4,12 @@ import { encode, unmarshal } from "../board";
 import hnefatafl from "../boards/hnefatafl";
 import partition from "../partition";
 import Side from "../side";
-import { createNew, IState } from "../state";
+import { createNew, IState, play } from "../state";
 import Tile from "../tile";
 
 interface IRootState {
     game: IState;
+    selected: Vector | false;
 }
 
 export default class Root extends React.Component<{}, IRootState> {
@@ -19,6 +20,7 @@ export default class Root extends React.Component<{}, IRootState> {
                 board: unmarshal(hnefatafl),
                 start: Side.Defenders,
             }),
+            selected: false,
         };
     }
 
@@ -37,6 +39,21 @@ export default class Root extends React.Component<{}, IRootState> {
         );
     }
 
+    private onSelect = (x: number, y: number): void => {
+        if (this.state.selected === false) {
+            this.setState({ selected: [x, y] });
+            return;
+        }
+
+        this.onPlay(this.state.selected, [x, y]);
+        this.setState({ selected: false });
+    }
+
+    private onPlay = (a: Vector, b: Vector): void => {
+        const s = play(this.getState(), a, b);
+        this.setState({ game: s });
+    }
+
     private renderParticipants() {
         const { turn } = this.getState();
         return [Side.Attackers, Side.Defenders].map(side => (
@@ -50,14 +67,19 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private renderBoard() {
+        const { selected } = this.state;
         return this.board().map((row, y) => {
-            const content = row.map((tile, x) => {
-                return (
-                    <div className="MatchElements__BoardTile">
-                        {this.encode(tile)}
-                    </div>
-                );
-            });
+            const content = row.map((tile, x) => (
+                <div className={css({
+                    "MatchElements__BoardTile": true,
+                    "MatchElements__BoardTile--selected": selected &&
+                        selected[0] === x &&
+                        selected[1] === y,
+                })}
+                    onClick={() => this.onSelect(x, y)}>
+                    {this.encode(tile)}
+                </div>
+            ));
 
             return (
                 <div className="MatchElements__BoardTileRow">

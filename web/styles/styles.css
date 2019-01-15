@@ -48,6 +48,10 @@ body {
     width: 24px;
 }
 
+.MatchElements__BoardTile--selected {
+    background-color: rgba(0, 0, 0, 0.10);
+}
+
 .MatchElements__BoardTile--selectable {
     cursor: pointer;
 }
