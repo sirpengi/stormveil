@@ -52,6 +52,18 @@ function capture(s: IBoard, x: number, y: number): void {
     set(s, x, y, away(get(s, x, y)));
 }
 
+function capturable(t: Tile): boolean {
+    switch (t) {
+        case Tile.Throne:
+        case Tile.Refuge:
+        case Tile.Empty:
+        case Tile.None:
+            return false;
+        default:
+            return true;
+    }
+}
+
 export function side(t: Tile): Side {
     switch (t) {
         case Tile.Defender:
@@ -125,7 +137,7 @@ export function resolve(state: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoa
         // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
         const neighbor = get(nextState, cx, cy);
-        if (!hostile(tile, neighbor)) {
+        if (!capturable(neighbor) || !hostile(tile, neighbor)) {
             continue;
         }
 
