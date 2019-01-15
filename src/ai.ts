@@ -1,7 +1,7 @@
-import { vec, IBoard, moves, resolve, side } from "./board";
-import { Side } from "./side";
+import { IBoard, moves, resolve, side, vec } from "./board";
+import Side from "./side";
 import { opponent } from "./state";
-import { Tile } from "./tile";
+import Tile from "./tile";
 
 type Move = [Vector, Vector];
 

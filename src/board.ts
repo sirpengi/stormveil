@@ -1,5 +1,6 @@
-import { Side } from "./side";
-import { Tile } from "./tile";
+import partition from "./partition";
+import Side from "./side";
+import Tile from "./tile";
 
 type BoardRepresentation = Tile[];
 
@@ -12,15 +13,6 @@ const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 function flat<T>([first, ...rest]: T[][]): T[] {
     return rest.reduce((result, coll) => result.concat(coll), first);
-}
-
-function partition<T>(coll: T[], size: number): T[][] {
-    const result = [];
-    for (let i = 0; i < coll.length; i += size) {
-        result.push(coll.slice(i, i + size));
-    }
-
-    return result;
 }
 
 function clone(s: IBoard): IBoard {

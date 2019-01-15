@@ -1,5 +1,7 @@
-export enum Side {
+enum Side {
     None,
     Attackers,
     Defenders,
 }
+
+export default Side;

@@ -1,5 +1,5 @@
 import { IBoard, resolve } from "./board";
-import { Side } from "./side";
+import Side from "./side";
 
 interface IOptions {
     board: IBoard;
