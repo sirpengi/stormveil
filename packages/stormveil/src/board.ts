@@ -1,6 +1,7 @@
 import partition from "./partition";
 import Side from "./side";
 import Tile from "./tile";
+import { Vector } from "./types/vector";
 
 type BoardRepresentation = Tile[];
 
@@ -251,7 +252,7 @@ export function marshal(s: IBoard): string {
         .join("\n");
 }
 
-export function unmarshal(s: BoardTemplate): IBoard {
+export function unmarshal(s: string): IBoard {
     const tiles = s
         .trim()
         .replace(/ /g, "")

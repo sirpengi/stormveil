@@ -1,9 +1,10 @@
 import test from "tape";
 import { marshal, moves, resolve, unmarshal } from "./board";
 import hnefatafl from "./boards/hnefatafl";
+import { Vector } from "./types/vector";
 
 test("Board captures and moves", (assert) => {
-    const tests: Array<[string, BoardTemplate, string, Vector, Vector]> = [
+    const tests: Array<[string, string, string, Vector, Vector]> = [
         [
             "Move without capture one space to the east.",
             `A _`,
@@ -195,7 +196,7 @@ test("Generating legal moves", assert => {
     const indexed = (vs: Vector[]) =>
         vs.reduce((r, v) => ({ ...r, [v.toString()]: true }), {});
 
-    const tests: Array<[BoardTemplate, Vector, Vector[]]> = [
+    const tests: Array<[string, Vector, Vector[]]> = [
         [`A D`, [0, 0], []],
         [`A K`, [0, 0], []],
         [`D A`, [0, 0], []],

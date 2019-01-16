@@ -3,7 +3,7 @@
         "target": "es5",
         "module": "commonjs", 
         "strict": true,
-        "outDir": "build",
+        "outDir": "lib",
         "noImplicitAny": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
@@ -12,11 +12,11 @@
         "alwaysStrict": true,
         "noImplicitReturns": true,
         "esModuleInterop": true,
+        "declaration": true,
         "jsx": "react",
         "lib": [
             "dom",
-            "es5",
-            "es2017"
+            "es5"
         ]
     }
 }

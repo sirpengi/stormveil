@@ -1,12 +1,14 @@
 import css from "classnames";
 import React from "react";
-import { best } from "../ai";
-import { encode, moveable, moves, unmarshal } from "../board";
-import hnefatafl from "../boards/hnefatafl";
-import partition from "../partition";
-import Side from "../side";
-import { createNew, IState, play } from "../state";
-import Tile from "../tile";
+import { best } from "stormveil/lib/ai";
+import { encode, moveable, moves, unmarshal } from "stormveil/lib/board";
+import hnefatafl from "stormveil/lib/boards/hnefatafl";
+import partition from "stormveil/lib/partition";
+import Side from "stormveil/lib/side";
+import { createNew, IState, play } from "stormveil/lib/state";
+import Tile from "stormveil/lib/tile";
+
+type Vector = [number, number];
 
 interface IRootState {
     game: IState;

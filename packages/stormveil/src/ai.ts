@@ -2,6 +2,7 @@ import { IBoard, moves, resolve, side, vec } from "./board";
 import Side from "./side";
 import { opponent } from "./state";
 import Tile from "./tile";
+import { Vector } from "./types/vector";
 
 type Move = [Vector, Vector];
 

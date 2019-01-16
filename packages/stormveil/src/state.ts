@@ -1,5 +1,6 @@
 import { IBoard, resolve } from "./board";
 import Side from "./side";
+import { Vector } from "./types/vector";
 
 interface IOptions {
     board: IBoard;

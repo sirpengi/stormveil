@@ -1,0 +1,27 @@
+{
+  "name": "stormveil-ui",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --config webpack.config.js"
+  },
+  "author": "Samuel Ferrell",
+  "license": "MIT",
+  "dependencies": {
+    "@types/classnames": "^2.2.7",
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
+    "classnames": "^2.2.6",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "stormveil": "^0.0.0"
+  },
+  "devDependencies": {
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.2.2",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
+  }
+}
