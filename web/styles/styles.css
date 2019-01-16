@@ -2,6 +2,13 @@ body {
     font-family: sans-serif;
 }
 
+@keyframes pulse {
+    0%   { background-color: rgba(0, 0, 0, 0.00); }
+    25%  { background-color: rgba(0, 0, 0, 0.10); }
+    75%  { background-color: rgba(0, 0, 0, 0.10); }
+    100% { background-color: rgba(0, 0, 0, 0.00); }
+}
+
 .MatchElements {
     margin-left: 32px;
     margin-top: 32px;
@@ -22,8 +29,8 @@ body {
 }
 
 .MatchElements__Board {
-    border-bottom: 1px solid #ddd;
-    border-left: 1px solid #ddd;
+    border-bottom: 1px dotted #ddd;
+    border-left: 1px dotted #ddd;
     display: flex;
     flex-direction: column;
     height: 264px;
@@ -36,8 +43,8 @@ body {
 
 .MatchElements__BoardTile {
     align-items: center;
-    border-right: 1px solid #ddd;
-    border-top: 1px solid #ddd;
+    border-right: 1px dotted #ddd;
+    border-top: 1px dotted #ddd;
     cursor: default;
     display: flex;
     font-family: 'Consolas', monospace;
@@ -53,5 +60,7 @@ body {
 }
 
 .MatchElements__BoardTile--selectable {
+    animation: pulse 1250ms ease-in-out infinite;
     cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.10);
 }

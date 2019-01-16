@@ -1,6 +1,7 @@
 import css from "classnames";
 import React from "react";
-import { encode, unmarshal } from "../board";
+import { best } from "../ai";
+import { encode, moveable, moves, unmarshal } from "../board";
 import hnefatafl from "../boards/hnefatafl";
 import partition from "../partition";
 import Side from "../side";
@@ -40,22 +41,42 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private onSelect = (x: number, y: number): void => {
-        if (this.state.selected === false) {
+        const { selected } = this.state;
+        if (selected === false) {
             this.setState({ selected: [x, y] });
             return;
         }
 
-        this.onPlay(this.state.selected, [x, y]);
+        const [ sx, sy ] = selected;
+        if (sx === x && sy === y) {
+            this.setState({ selected: false });
+            return;
+        }
+
+        this.onPlay(selected, [x, y]);
         this.setState({ selected: false });
+        window.setTimeout(() => {
+            this.onAI();
+        }, 500);
+    }
+
+    private onAI = () => {
+        const { game } = this.state;
+        const move = best(game.board, game.turn, 3);
+        if (move == null) {
+            throw new Error("");
+        }
+
+        const [ a, b ] = move;
+        this.onPlay(a, b);
     }
 
     private onPlay = (a: Vector, b: Vector): void => {
-        const s = play(this.getState(), a, b);
-        this.setState({ game: s });
+        this.setState({ game: play(this.state.game, a, b) });
     }
 
     private renderParticipants() {
-        const { turn } = this.getState();
+        const { game: { turn } } = this.state;
         return [Side.Attackers, Side.Defenders].map(side => (
             <div className={css({
                 "MatchElements__Participant": true,
@@ -67,40 +88,67 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private renderBoard() {
-        const { selected } = this.state;
-        return this.board().map((row, y) => {
-            const content = row.map((tile, x) => (
-                <div className={css({
-                    "MatchElements__BoardTile": true,
-                    "MatchElements__BoardTile--selected": selected &&
-                        selected[0] === x &&
-                        selected[1] === y,
-                })}
-                    onClick={() => this.onSelect(x, y)}>
-                    {this.encode(tile)}
-                </div>
-            ));
-
-            return (
-                <div className="MatchElements__BoardTileRow">
-                    {content}
-                </div>
-            );
-        });
+        return this.board().map((row, y) => (
+            <div className="MatchElements__BoardTileRow">
+                {row.map((tile, x) =>
+                    this.renderTile(x, y, tile))}
+            </div>
+        ));
     }
 
-    private getState = (): IState =>
-        this.state.game
+    private renderTile = (x: number, y: number, t: Tile) => {
+        const isSelectable = this.isSelectable([x, y]);
+        const isSelected = this.isSelected([x, y]);
+        return (
+            <div className={css({
+                "MatchElements__BoardTile": true,
+                "MatchElements__BoardTile--selectable": isSelectable,
+                "MatchElements__BoardTile--selected": isSelected,
+            })}
+                onClick={() => (isSelected || isSelectable) && this.onSelect(x, y)}>
+                {this.renderTileName(t)}
+            </div>
+        );
+    }
 
-    private encode = (t: Tile): string => {
+    private renderTileName = (t: Tile): string => {
         switch (t) {
             case Tile.Empty:    return " ";
             default:            return encode(t);
         }
     }
 
+    private isSelectable = ([x, y]: Vector): boolean => {
+        const { game, selected } = this.state;
+        if (this.side() !== game.turn) {
+            return false;
+        }
+
+        if (selected === false) {
+            return moveable(game.board, this.side())
+                .some(([ vx, vy ]) => vx === x && vy === y);
+        }
+
+        const [ sx, sy ] = selected;
+        return moves(game.board, [sx, sy])
+            .some(([ vx, vy ]) => vx === x && vy === y);
+    }
+
+    private isSelected = ([x, y]: Vector): boolean => {
+        const { selected } = this.state;
+        if (selected === false) {
+            return false;
+        }
+
+        const [ sx, sy ] = selected;
+        return sx === x && sy === y;
+    }
+
+    private side = () =>
+        Side.Defenders
+
     private board = (): Tile[][] => partition(
-        this.getState().board.data,
-        this.getState().board.width,
+        this.state.game.board.data,
+        this.state.game.board.width,
     )
 }
