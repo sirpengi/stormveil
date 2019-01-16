@@ -179,6 +179,10 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
         for (let k = 1; k < Infinity; k += 1) {
             const bx = ax + (ox * k);
             const by = ay + (oy * k);
+            if (bx < 0 || bx >= s.width) {
+                break;
+            }
+
             if (allowed(t, get(s, bx, by))) {
                 m.push([bx, by] as Vector);
                 continue;
