@@ -6,13 +6,12 @@ import Tile from "./tile";
 type Move = [Vector, Vector];
 
 interface IStateNode {
-    state: IBoard;
-    turn: Side;
+    score: number;
     move: Move | null;
     nodes: IStateNode[];
 }
 
-function score(board: IBoard, turn: Side): number {
+function evaluate(board: IBoard, turn: Side): number {
     let sum = 0;
     let i;
     for (i = 0; i < board.data.length; i += 1) {
@@ -50,25 +49,22 @@ function createTree(board: IBoard, move: Move | null, turn: Side, depth: number)
             }
 
             for (const mv of mvs) {
-                const b = resolve(board, kv, mv);
-                const t = createTree(b, [kv, mv], opponent(turn), depth - 1);
-                nodes.push(t);
+                nodes.push(createTree(resolve(board, kv, mv), [kv, mv], opponent(turn), depth - 1));
             }
         }
     }
 
     return {
-        state: board,
-        turn: turn,
+        score: evaluate(board, turn),
         move: move,
         nodes: nodes,
     };
 }
 
 function minimax(tree: IStateNode, maximizing: boolean = true): number {
-    const { nodes, turn, state } = tree;
+    const { nodes, score } = tree;
     if (nodes.length === 0) {
-        return score(state, turn);
+        return score;
     }
 
     const fn = maximizing ? Math.max : Math.min;
