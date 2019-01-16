@@ -174,7 +174,7 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
     const m = [];
     const t = get(s, ax, ay);
 
-    for (let i = 0; i < offsets.length; i += 1) {
+    for (let i = 0; i < 4; i += 1) {
         const [ ox, oy ] = offsets[i];
         for (let k = 1; k < Infinity; k += 1) {
             const bx = ax + (ox * k);
