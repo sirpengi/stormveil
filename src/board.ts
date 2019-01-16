@@ -170,6 +170,25 @@ function allowed(t: Tile, u: Tile): boolean {
     return false;
 }
 
+export function moveable(s: IBoard, t: Side): Vector[] {
+    const result = [];
+    for (let i = 0; i < s.data.length; i += 1) {
+        if (side(s.data[i]) !== t) {
+            continue;
+        }
+
+        const v = vec(s.width, i);
+        const vs = moves(s, v);
+        if (vs.length === 0) {
+            continue;
+        }
+
+        result.push(v);
+    }
+
+    return result;
+}
+
 export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
     const m = [];
     const t = get(s, ax, ay);
