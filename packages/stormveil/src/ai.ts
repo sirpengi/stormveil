@@ -82,19 +82,17 @@ function minimax(tree: IStateNode, maximizing: boolean = true): number {
 type NodeScoreResult = [IStateNode, number];
 
 function searchBestNode(tree: IStateNode): IStateNode {
-    const [ initialNode, ...rest ] = tree.nodes;
-    const initialValue: NodeScoreResult = [initialNode, minimax(initialNode)];
-    const [ bestNode ] = rest.reduce<NodeScoreResult>((result, node) => {
-        const [ prevNode, prevValue ] = result;
-        const value = minimax(node);
-        if (value > prevValue) {
-            return [node, value];
+    const length = tree.nodes.length;
+
+    let result: NodeScoreResult = [tree.nodes[0], minimax(tree.nodes[0])];
+    for (let i = 1; i < length; i += 1) {
+        const value = minimax(tree.nodes[i]);
+        if (value > result[1]) {
+            result = [tree.nodes[i], value];
         }
+    }
 
-        return [prevNode, prevValue];
-    }, initialValue);
-
-    return bestNode;
+    return result[0];
 }
 
 export function best(board: IBoard, turn: Side, depth: number): Move {
