@@ -1,6 +1,9 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+      "test-engine": "cd packages/stormveil && npm run-script test"
+  },
   "devDependencies": {
     "lerna": "^3.10.5"
   }
