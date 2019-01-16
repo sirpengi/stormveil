@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "prepare": "tsc",
-    "test": "tsc && tape build/test.js"
+    "test": "tsc && tape lib/test.js"
   },
   "author": "Samuel Ferrell",
   "license": "MIT",
