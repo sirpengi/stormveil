@@ -13,6 +13,7 @@
         "noImplicitReturns": true,
         "esModuleInterop": true,
         "declaration": true,
+        "sourceMap": true,
         "lib": [
             "es5",
             "es2017"
