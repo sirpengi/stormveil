@@ -80,7 +80,7 @@ export default class Root extends React.Component<{}, IRootState> {
     private renderParticipants() {
         const { game: { turn } } = this.state;
         return [Side.Attackers, Side.Defenders].map(side => (
-            <div className={css({
+            <div key={side} className={css({
                 "MatchElements__Participant": true,
                 "MatchElements__Participant--active": turn === side,
             })}>
@@ -91,7 +91,7 @@ export default class Root extends React.Component<{}, IRootState> {
 
     private renderBoard() {
         return this.board().map((row, y) => (
-            <div className="MatchElements__BoardTileRow">
+            <div key={y} className="MatchElements__BoardTileRow">
                 {row.map((tile, x) =>
                     this.renderTile(x, y, tile))}
             </div>
@@ -102,7 +102,7 @@ export default class Root extends React.Component<{}, IRootState> {
         const isSelectable = this.isSelectable([x, y]);
         const isSelected = this.isSelected([x, y]);
         return (
-            <div className={css({
+            <div key={x} className={css({
                 "MatchElements__BoardTile": true,
                 "MatchElements__BoardTile--selectable": isSelectable,
                 "MatchElements__BoardTile--selected": isSelected,
