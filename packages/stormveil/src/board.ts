@@ -45,7 +45,7 @@ function capture(s: IBoard, x: number, y: number): void {
     set(s, x, y, away(get(s, x, y)));
 }
 
-function capturable(t: Tile): boolean {
+export function capturable(t: Tile): boolean {
     switch (t) {
         case Tile.Throne:
         case Tile.Refuge:
