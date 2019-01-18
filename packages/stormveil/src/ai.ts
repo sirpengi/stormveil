@@ -5,7 +5,7 @@ import { Vector } from "./types/vector";
 
 type Move = [Vector, Vector];
 
-export function evaluate(board: IBoard, turn: Side): number {
+function evaluate(board: IBoard, turn: Side): number {
     let sum = 0;
     for (let i = 0; i < board.data.length; i += 1) {
         const t = board.data[i];
