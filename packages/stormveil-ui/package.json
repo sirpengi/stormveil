@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --config webpack.config.js --watch"
+    "bundle": "webpack --config webpack.config.js --env.mode=production",
+    "start": "webpack --config webpack.config.js --env.mode=development --watch"
   },
   "author": "Samuel Ferrell",
   "license": "MIT",
