@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
+      "prepare": "lerna bootstrap",
       "test-engine": "cd packages/stormveil && npm run-script test"
   },
   "devDependencies": {
