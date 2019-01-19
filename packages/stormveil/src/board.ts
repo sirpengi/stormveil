@@ -207,7 +207,12 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
                 break;
             }
 
-            if (allowed(t, get(s, bx, by))) {
+            const n = get(s, bx, by);
+            if (t === Tile.Defender && n === Tile.Throne) {
+                continue;
+            }
+
+            if (allowed(t, n)) {
                 m.push([bx, by] as Vector);
                 continue;
             }
