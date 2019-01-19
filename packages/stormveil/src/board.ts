@@ -76,6 +76,10 @@ function hostile(a: Tile, b: Tile): boolean {
         return true;
     }
 
+    if (a === Tile.Refuge || b === Tile.Refuge) {
+        return true;
+    }
+
     if (side(a) === Side.None || side(b) === Side.None) {
         return false;
     }

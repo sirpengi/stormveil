@@ -175,6 +175,34 @@ test("Board captures and moves", (assert) => {
             [0, 0],
             [1, 0],
         ],
+        [
+            "Attackers may use refuges as anvils.",
+            `A _ D R`,
+            `_ A _ R`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Defenders may use refuges as anvils.",
+            `D _ A R`,
+            `_ D _ R`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Kings may use refuges as anvils.",
+            `K _ A R`,
+            `_ K _ R`,
+            [0, 0],
+            [1, 0],
+        ],
+        [
+            "Kings may use refuges as anvils when moving from a castle.",
+            `C _ A R`,
+            `T K _ R`,
+            [0, 0],
+            [1, 0],
+        ],
     ];
 
     tests.forEach(([message, board, expected, a, b]) => {
