@@ -1,5 +1,5 @@
-import { capturable, IBoard, moves, resolve, side, vec, marshal } from "./board";
-import Side from "./side";
+import { capturable, IBoard, moves, resolve, side, vec } from "./board";
+import { Side } from "./side";
 import { opponent } from "./state";
 import { Vector } from "./types/vector";
 

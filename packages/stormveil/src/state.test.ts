@@ -1,6 +1,6 @@
 import test from "tape";
 import { unmarshal } from "./board";
-import Side from "./side";
+import { Side } from "./side";
 import { createNew, play } from "./state";
 
 test("Shallow exercises for 'createNew' and 'play' state functions.", assert => {

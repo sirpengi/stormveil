@@ -1,6 +1,6 @@
-import partition from "./partition";
-import Side from "./side";
-import Tile from "./tile";
+import { partition } from "./partition";
+import { Side } from "./side";
+import { Tile } from "./tile";
 import { Vector } from "./types/vector";
 
 export interface IBoard {

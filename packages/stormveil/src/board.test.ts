@@ -1,7 +1,7 @@
 import test from "tape";
 import { marshal, moves, resolve, unmarshal, victor } from "./board";
-import hnefatafl from "./boards/hnefatafl";
-import Side from "./side";
+import { hnefatafl } from "./boards";
+import { Side } from "./side";
 import { Vector } from "./types/vector";
 
 test("Board captures and moves", (assert) => {

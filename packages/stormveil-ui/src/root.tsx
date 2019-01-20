@@ -2,11 +2,11 @@ import css from "classnames";
 import React from "react";
 import { best } from "stormveil/lib/ai";
 import { encode, moveable, moves, unmarshal } from "stormveil/lib/board";
-import hnefatafl from "stormveil/lib/boards/hnefatafl";
-import partition from "stormveil/lib/partition";
-import Side from "stormveil/lib/side";
+import { hnefatafl } from "stormveil/lib/boards";
+import { partition } from "stormveil/lib/partition";
+import { Side } from "stormveil/lib/side";
 import { createNew, IState, play } from "stormveil/lib/state";
-import Tile from "stormveil/lib/tile";
+import { Tile } from "stormveil/lib/tile";
 
 type Vector = [number, number];
 

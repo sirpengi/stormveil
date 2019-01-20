@@ -1,4 +1,4 @@
-enum Tile {
+export enum Tile {
     None,
     Attacker,
     Castle,
@@ -9,5 +9,3 @@ enum Tile {
     Sanctuary,
     Throne,
 }
-
-export default Tile;
