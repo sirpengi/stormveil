@@ -3,10 +3,8 @@ import Side from "./side";
 import Tile from "./tile";
 import { Vector } from "./types/vector";
 
-type BoardRepresentation = Tile[];
-
 export interface IBoard {
-    tiles: BoardRepresentation;
+    tiles: Tile[];
     width: number;
 }
 
