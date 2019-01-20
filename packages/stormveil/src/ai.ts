@@ -7,8 +7,8 @@ type Move = [Vector, Vector];
 
 function evaluate(board: IBoard, turn: Side): number {
     let sum = 0;
-    for (let i = 0; i < board.data.length; i += 1) {
-        const t = board.data[i];
+    for (let i = 0; i < board.tiles.length; i += 1) {
+        const t = board.tiles[i];
         const s = side(t);
         if (!capturable(t)) {
             continue;
@@ -26,8 +26,8 @@ function evaluate(board: IBoard, turn: Side): number {
 }
 
 function iterate(board: IBoard, turn: Side, fn: (a: Vector, b: Vector) => void): void {
-    for (let i = 0; i < board.data.length; i += 1) {
-        const t = board.data[i];
+    for (let i = 0; i < board.tiles.length; i += 1) {
+        const t = board.tiles[i];
         if (side(t) !== turn) {
             continue;
         }

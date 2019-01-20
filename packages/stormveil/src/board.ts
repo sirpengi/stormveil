@@ -6,7 +6,7 @@ import { Vector } from "./types/vector";
 type BoardRepresentation = Tile[];
 
 export interface IBoard {
-    data: BoardRepresentation;
+    tiles: BoardRepresentation;
     width: number;
 }
 
@@ -17,7 +17,7 @@ function flat<T>([first, ...rest]: T[][]): T[] {
 }
 
 function clone(s: IBoard): IBoard {
-    return { data: s.data.slice(), width: s.width };
+    return { tiles: s.tiles.slice(), width: s.width };
 }
 
 export function vec(w: number, i: number): Vector {
@@ -29,7 +29,7 @@ function key(w: number, x: number, y: number): number {
 }
 
 function get(s: IBoard, x: number, y: number): Tile {
-    const t = s.data[key(s.width, x, y)];
+    const t = s.tiles[key(s.width, x, y)];
     if (t === undefined) {
         return Tile.None;
     }
@@ -38,7 +38,7 @@ function get(s: IBoard, x: number, y: number): Tile {
 }
 
 function set(s: IBoard, x: number, y: number, t: Tile): void {
-    s.data[key(s.width, x, y)] = t;
+    s.tiles[key(s.width, x, y)] = t;
 }
 
 function capture(s: IBoard, x: number, y: number): void {
@@ -177,8 +177,8 @@ function allowed(t: Tile, u: Tile): boolean {
 
 export function moveable(s: IBoard, t: Side): Vector[] {
     const result = [];
-    for (let i = 0; i < s.data.length; i += 1) {
-        if (side(s.data[i]) !== t) {
+    for (let i = 0; i < s.tiles.length; i += 1) {
+        if (side(s.tiles[i]) !== t) {
             continue;
         }
 
@@ -255,7 +255,7 @@ function decode(s: string): Tile {
 }
 
 export function marshal(s: IBoard): string {
-    const tiles = s.data.map(n => encode(n));
+    const tiles = s.tiles.map(n => encode(n));
     return partition(tiles, s.width)
         .map(r => r.join(" "))
         .join("\n");
@@ -270,5 +270,5 @@ export function unmarshal(s: string): IBoard {
         .map(v => v.map(decode));
 
     const [ sample ] = tiles;
-    return { data: flat(tiles), width: sample.length };
+    return { tiles: flat(tiles), width: sample.length };
 }

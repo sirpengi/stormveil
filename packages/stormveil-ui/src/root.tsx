@@ -150,7 +150,7 @@ export default class Root extends React.Component<{}, IRootState> {
         Side.Defenders
 
     private board = (): Tile[][] => partition(
-        this.state.game.board.data,
+        this.state.game.board.tiles,
         this.state.game.board.width,
     )
 }
