@@ -1,6 +1,7 @@
 import test from "tape";
-import { marshal, moves, resolve, unmarshal } from "./board";
+import { marshal, moves, resolve, unmarshal, victor } from "./board";
 import hnefatafl from "./boards/hnefatafl";
+import Side from "./side";
 import { Vector } from "./types/vector";
 
 test("Board captures and moves", (assert) => {
@@ -286,6 +287,33 @@ test("Generating legal moves", assert => {
             indexed(expected),
         );
     });
+
+    assert.end();
+});
+
+test("Victory conditions.", assert => {
+    const tests: Array<[string, Side | null]> = [
+        [`A A D D K`, null],
+        [`A`, Side.Attackers],
+        [`K`, Side.Defenders],
+        [`K D`, Side.Defenders],
+        [`A D`, Side.Attackers],
+        [`A A A A A`, Side.Attackers],
+        [`A A D D S`, Side.Defenders],
+        [`A A D D R`, Side.Attackers],
+    ];
+
+    for (const [ board, expected ] of tests) {
+        const actual = victor(unmarshal(board));
+        assert.equals(
+            actual,
+            expected,
+            "Expected victor of the following board: "
+                + "\n" + marshal(unmarshal(board))
+                + "\n to be "
+                + expected,
+        );
+    }
 
     assert.end();
 });

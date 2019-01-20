@@ -173,6 +173,35 @@ function allowed(t: Tile, u: Tile): boolean {
     return false;
 }
 
+export function victor(s: IBoard): Side | null {
+    let kf = false;
+    let af = false;
+    for (let i = 0; i < s.tiles.length; i += 1) {
+        const t = s.tiles[i];
+        if (t === Tile.Sanctuary) {
+            return Side.Defenders;
+        }
+
+        if (t === Tile.King) {
+            kf = true;
+        }
+
+        if (t === Tile.Attacker) {
+            af = true;
+        }
+    }
+
+    if (!kf) {
+        return Side.Attackers;
+    }
+
+    if (!af) {
+        return Side.Defenders;
+    }
+
+    return null;
+}
+
 export function moveable(s: IBoard, t: Side): Vector[] {
     const result = [];
     for (let i = 0; i < s.tiles.length; i += 1) {
