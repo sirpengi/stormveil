@@ -7,7 +7,7 @@ Play [Hnefatafl](https://en.wikipedia.org/wiki/Tafl_games) in the browser.
 [x] Movement generation
 [x] Basic adversarial AI
 [x] Basic user interface
-[ ] Victory conditions
+[x] Victory conditions
 [ ] Improve board evaluation heuristics for better AI
 [ ] Better UI
 [ ] Advanced victory conditions
