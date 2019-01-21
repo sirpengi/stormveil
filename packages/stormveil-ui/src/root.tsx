@@ -42,58 +42,6 @@ export default class Root extends React.Component<{}, IRootState> {
         );
     }
 
-    private renderVictor() {
-        const { game: { victor } } = this.state;
-        if (victor === null) {
-            return null;
-        }
-
-        return (
-            <div className="MatchElements__Victor">
-                {Side[victor]} wins!
-            </div>
-        );
-    }
-
-    private onSelect = (x: number, y: number): void => {
-        const { selected } = this.state;
-        if (selected === false) {
-            this.setState({ selected: [x, y] });
-            return;
-        }
-
-        const [ sx, sy ] = selected;
-        if (sx === x && sy === y) {
-            this.setState({ selected: false });
-            return;
-        }
-
-        this.onPlay(selected, [x, y]);
-        this.setState({ selected: false });
-        if (this.isVictorDeclared()) {
-            return;
-        }
-
-        window.setTimeout(() => {
-            this.onAI();
-        }, 500);
-    }
-
-    private onAI = () => {
-        const { game } = this.state;
-        const move = best(game.board, game.turn, 3);
-        if (move == null) {
-            throw new Error("");
-        }
-
-        const [ a, b ] = move;
-        this.onPlay(a, b);
-    }
-
-    private onPlay = (a: Vector, b: Vector): void => {
-        this.setState({ game: play(this.state.game, a, b) });
-    }
-
     private renderParticipants() {
         const { game: { turn } } = this.state;
         return [Side.Attackers, Side.Defenders].map(side => (
@@ -138,6 +86,65 @@ export default class Root extends React.Component<{}, IRootState> {
         }
     }
 
+    private renderVictor() {
+        const { game: { victor } } = this.state;
+        if (victor === null) {
+            return null;
+        }
+
+        return (
+            <div className="MatchElements__Victor">
+                {Side[victor]} wins!
+            </div>
+        );
+    }
+
+    private side = () => Side.Defenders
+
+    private board = (): Tile[][] => partition(
+        this.state.game.board.tiles,
+        this.state.game.board.width,
+    )
+
+    private onSelect = (x: number, y: number): void => {
+        const { selected } = this.state;
+        if (selected === false) {
+            this.setState({ selected: [x, y] });
+            return;
+        }
+
+        const [ sx, sy ] = selected;
+        if (sx === x && sy === y) {
+            this.setState({ selected: false });
+            return;
+        }
+
+        this.onPlay(selected, [x, y]);
+        this.setState({ selected: false });
+        if (this.isVictorDeclared()) {
+            return;
+        }
+
+        window.setTimeout(() => {
+            this.onAI();
+        }, 500);
+    }
+
+    private onAI = () => {
+        const { game } = this.state;
+        const move = best(game.board, game.turn, 3);
+        if (move == null) {
+            throw new Error("");
+        }
+
+        const [ a, b ] = move;
+        this.onPlay(a, b);
+    }
+
+    private onPlay = (a: Vector, b: Vector): void => {
+        this.setState({ game: play(this.state.game, a, b) });
+    }
+
     private isSelectable = ([x, y]: Vector): boolean => {
         const { game, selected } = this.state;
         if (this.side() !== game.turn) {
@@ -167,12 +174,4 @@ export default class Root extends React.Component<{}, IRootState> {
     private isVictorDeclared = (): boolean => {
         return this.state.game.victor !== null;
     }
-
-    private side = () =>
-        Side.Defenders
-
-    private board = (): Tile[][] => partition(
-        this.state.game.board.tiles,
-        this.state.game.board.width,
-    )
 }
