@@ -26,6 +26,7 @@ interface IMove {
 export interface IState extends ISimpleState {
     history: IMove[];
     initial: ISimpleState;
+    victor: Side | null;
 }
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -213,7 +214,7 @@ export function victor(s: IBoard): Side | null {
             return Side.Defenders;
         }
 
-        if (t === Tile.King) {
+        if (t === Tile.King || t === Tile.Castle) {
             kf = true;
         }
 
@@ -336,6 +337,7 @@ export function createNew(options: IOptions): IState {
         board: options.board,
         turn: options.start,
         history: [],
+        victor: null,
         initial: {
             board: options.board,
             turn: options.start,
@@ -348,5 +350,6 @@ export function play(s: IState, a: Vector, b: Vector): IState {
     nextState.board = resolve(nextState.board, a, b);
     nextState.turn = opponent(nextState.turn);
     nextState.history = nextState.history.concat({ a, b });
+    nextState.victor = victor(nextState.board);
     return nextState;
 }

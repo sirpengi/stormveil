@@ -28,6 +28,11 @@ body {
     color: #000;
 }
 
+.MatchElements__Victor {
+    margin-top: 8px;
+    text-align: center;
+}
+
 .MatchElements__Board {
     border-bottom: 1px dotted #ddd;
     border-left: 1px dotted #ddd;

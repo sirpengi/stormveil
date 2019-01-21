@@ -293,6 +293,7 @@ test("Generating legal moves", assert => {
 
 test("Victory conditions.", assert => {
     const tests: Array<[string, Side | null]> = [
+        [`C D D A A`, null],
         [`A A D D K`, null],
         [`A`, Side.Attackers],
         [`K`, Side.Defenders],

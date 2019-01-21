@@ -36,7 +36,21 @@ export default class Root extends React.Component<{}, IRootState> {
                     <div className="MatchElements__Board">
                         {this.renderBoard()}
                     </div>
+                    {this.renderVictor()}
                 </div>
+            </div>
+        );
+    }
+
+    private renderVictor() {
+        const { game: { victor } } = this.state;
+        if (victor === null) {
+            return null;
+        }
+
+        return (
+            <div className="MatchElements__Victor">
+                {Side[victor]} wins!
             </div>
         );
     }
@@ -56,6 +70,10 @@ export default class Root extends React.Component<{}, IRootState> {
 
         this.onPlay(selected, [x, y]);
         this.setState({ selected: false });
+        if (this.isVictorDeclared()) {
+            return;
+        }
+
         window.setTimeout(() => {
             this.onAI();
         }, 500);
@@ -98,15 +116,16 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private renderTile = (x: number, y: number, t: Tile) => {
+        const isVictory = this.isVictorDeclared();
         const isSelectable = this.isSelectable([x, y]);
         const isSelected = this.isSelected([x, y]);
         return (
             <div key={x} className={css({
                 "MatchElements__BoardTile": true,
-                "MatchElements__BoardTile--selectable": isSelectable,
+                "MatchElements__BoardTile--selectable": isSelectable && !isVictory,
                 "MatchElements__BoardTile--selected": isSelected,
             })}
-                onClick={() => (isSelected || isSelectable) && this.onSelect(x, y)}>
+                onClick={() => (isSelected || isSelectable || !isVictory) && this.onSelect(x, y)}>
                 {this.renderTileName(t)}
             </div>
         );
@@ -143,6 +162,10 @@ export default class Root extends React.Component<{}, IRootState> {
 
         const [ sx, sy ] = selected;
         return sx === x && sy === y;
+    }
+
+    private isVictorDeclared = (): boolean => {
+        return this.state.game.victor !== null;
     }
 
     private side = () =>
