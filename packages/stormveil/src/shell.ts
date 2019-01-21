@@ -21,7 +21,6 @@ export class Shell {
             board: board,
             turn: options.start,
             history: [],
-            victor: null,
             initial: {
                 board: board,
                 turn: options.start,

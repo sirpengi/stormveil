@@ -21,7 +21,6 @@ interface IMove {
 export interface IState extends ISimpleState {
     history: IMove[];
     initial: ISimpleState;
-    victor: Team | null;
 }
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -332,6 +331,5 @@ export function play(s: IState, a: Vector, b: Vector): IState {
     nextState.board = resolve(nextState.board, a, b);
     nextState.turn = opponent(nextState.turn);
     nextState.history = nextState.history.concat({ a, b });
-    nextState.victor = victor(nextState.board);
     return nextState;
 }
