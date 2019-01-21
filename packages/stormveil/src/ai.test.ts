@@ -1,7 +1,7 @@
 import test from "tape";
 import { best } from "./ai";
-import { unmarshal } from "./board";
 import { Side } from "./side";
+import { unmarshal } from "./state";
 
 test("Search for the best move", assert => {
     const board = `

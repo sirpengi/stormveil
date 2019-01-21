@@ -1,6 +1,5 @@
-import { capturable, IBoard, moves, resolve, side, vec } from "./board";
 import { Side } from "./side";
-import { opponent } from "./state";
+import { capturable, IBoard, moves, opponent, resolve, side, vec } from "./state";
 import { Vector } from "./types/vector";
 
 type Move = [Vector, Vector];
