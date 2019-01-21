@@ -1,5 +1,5 @@
 import { partition } from "./partition";
-import { Side } from "./side";
+import { Team } from "./team";
 import { Tile } from "./tile";
 import { Vector } from "./types/vector";
 
@@ -10,7 +10,7 @@ export interface IBoard {
 
 interface ISimpleState {
     board: IBoard;
-    turn: Side;
+    turn: Team;
 }
 
 interface IMove {
@@ -21,7 +21,7 @@ interface IMove {
 export interface IState extends ISimpleState {
     history: IMove[];
     initial: ISimpleState;
-    victor: Side | null;
+    victor: Team | null;
 }
 
 const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -71,27 +71,27 @@ export function capturable(t: Tile): boolean {
     }
 }
 
-export function side(t: Tile): Side {
+export function team(t: Tile): Team {
     switch (t) {
         case Tile.Defender:
         case Tile.King:
         case Tile.Castle:
         case Tile.Sanctuary:
-            return Side.Defenders;
+            return Team.Defenders;
         case Tile.Attacker:
-            return Side.Attackers;
+            return Team.Attackers;
         default:
-            return Side.None;
+            return Team.None;
     }
 }
 
-export function opponent(t: Side): Side {
+export function opponent(t: Team): Team {
     switch (t) {
-        case Side.Attackers:
-            return Side.Defenders;
-        case Side.Defenders:
-            return Side.Attackers;
-        case Side.None:
+        case Team.Attackers:
+            return Team.Defenders;
+        case Team.Defenders:
+            return Team.Attackers;
+        case Team.None:
             throw new Error();
     }
 }
@@ -105,11 +105,11 @@ function hostile(a: Tile, b: Tile): boolean {
         return true;
     }
 
-    if (side(a) === Side.None || side(b) === Side.None) {
+    if (team(a) === Team.None || team(b) === Team.None) {
         return false;
     }
 
-    return side(a) !== side(b);
+    return team(a) !== team(b);
 }
 
 function inside(a: Tile): Tile {
@@ -200,13 +200,13 @@ function allowed(t: Tile, u: Tile): boolean {
     return false;
 }
 
-export function victor(s: IBoard): Side | null {
+export function victor(s: IBoard): Team | null {
     let kf = false;
     let af = false;
     for (let i = 0; i < s.tiles.length; i += 1) {
         const t = s.tiles[i];
         if (t === Tile.Sanctuary) {
-            return Side.Defenders;
+            return Team.Defenders;
         }
 
         if (t === Tile.King || t === Tile.Castle) {
@@ -219,20 +219,20 @@ export function victor(s: IBoard): Side | null {
     }
 
     if (!kf) {
-        return Side.Attackers;
+        return Team.Attackers;
     }
 
     if (!af) {
-        return Side.Defenders;
+        return Team.Defenders;
     }
 
     return null;
 }
 
-export function moveable(s: IBoard, t: Side): Vector[] {
+export function moveable(s: IBoard, t: Team): Vector[] {
     const result = [];
     for (let i = 0; i < s.tiles.length; i += 1) {
-        if (side(s.tiles[i]) !== t) {
+        if (team(s.tiles[i]) !== t) {
             continue;
         }
 

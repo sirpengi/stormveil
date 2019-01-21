@@ -1,4 +1,4 @@
-export enum Side {
+export enum Team {
     None,
     Attackers,
     Defenders,

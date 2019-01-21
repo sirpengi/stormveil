@@ -1,14 +1,14 @@
-import { Side } from "./side";
-import { capturable, IBoard, moves, opponent, resolve, side, vec } from "./state";
+import { capturable, IBoard, moves, opponent, resolve, team, vec } from "./state";
+import { Team } from "./team";
 import { Vector } from "./types/vector";
 
 type Move = [Vector, Vector];
 
-function evaluate(board: IBoard, turn: Side): number {
+function evaluate(board: IBoard, turn: Team): number {
     let sum = 0;
     for (let i = 0; i < board.tiles.length; i += 1) {
         const t = board.tiles[i];
-        const s = side(t);
+        const s = team(t);
         if (!capturable(t)) {
             continue;
         }
@@ -24,10 +24,10 @@ function evaluate(board: IBoard, turn: Side): number {
     return sum;
 }
 
-function iterate(board: IBoard, turn: Side, fn: (a: Vector, b: Vector) => void): void {
+function iterate(board: IBoard, turn: Team, fn: (a: Vector, b: Vector) => void): void {
     for (let i = 0; i < board.tiles.length; i += 1) {
         const t = board.tiles[i];
-        if (side(t) !== turn) {
+        if (team(t) !== turn) {
             continue;
         }
 
@@ -43,7 +43,7 @@ function iterate(board: IBoard, turn: Side, fn: (a: Vector, b: Vector) => void):
     }
 }
 
-function minimax(board: IBoard, turn: Side, depth: number, maximizing: boolean): number {
+function minimax(board: IBoard, turn: Team, depth: number, maximizing: boolean): number {
     const adversary = opponent(turn);
     if (depth === 0) {
         return evaluate(board, adversary);
@@ -58,7 +58,7 @@ function minimax(board: IBoard, turn: Side, depth: number, maximizing: boolean):
     return result;
 }
 
-function search(board: IBoard, turn: Side, depth: number): Move {
+function search(board: IBoard, turn: Team, depth: number): Move {
     let result: Move | null = null;
     let r = -Infinity;
     iterate(board, turn, (a, b) => {
@@ -76,7 +76,7 @@ function search(board: IBoard, turn: Side, depth: number): Move {
     return result;
 }
 
-export function best(board: IBoard, turn: Side, depth: number): Move {
+export function best(board: IBoard, turn: Team, depth: number): Move {
     const result = search(board, turn, depth);
     if (result == null) {
         throw new Error("Unexpected null move value.");

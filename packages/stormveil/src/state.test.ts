@@ -1,7 +1,7 @@
 import test from "tape";
 import { hnefatafl } from "./boards";
-import { Side } from "./side";
-import {  marshal, moves, play, resolve, unmarshal, victor } from "./state";
+import { marshal, moves, resolve, unmarshal, victor } from "./state";
+import { Team } from "./team";
 import { Vector } from "./types/vector";
 
 test("Board captures and moves", (assert) => {
@@ -292,16 +292,16 @@ test("Generating legal moves", assert => {
 });
 
 test("Victory conditions.", assert => {
-    const tests: Array<[string, Side | null]> = [
+    const tests: Array<[string, Team | null]> = [
         [`C D D A A`, null],
         [`A A D D K`, null],
-        [`A`, Side.Attackers],
-        [`K`, Side.Defenders],
-        [`K D`, Side.Defenders],
-        [`A D`, Side.Attackers],
-        [`A A A A A`, Side.Attackers],
-        [`A A D D S`, Side.Defenders],
-        [`A A D D R`, Side.Attackers],
+        [`A`, Team.Attackers],
+        [`K`, Team.Defenders],
+        [`K D`, Team.Defenders],
+        [`A D`, Team.Attackers],
+        [`A A A A A`, Team.Attackers],
+        [`A A D D S`, Team.Defenders],
+        [`A A D D R`, Team.Attackers],
     ];
 
     for (const [ board, expected ] of tests) {
@@ -318,27 +318,3 @@ test("Victory conditions.", assert => {
 
     assert.end();
 });
-
-// test("Shallow exercises for 'createNew' and 'play' state functions.", assert => {
-//     const start = Side.Attackers;
-//     const board = unmarshal(`
-//         R _ A _ R
-//         _ _ D _ _
-//         A D K D A
-//         _ _ D _ _
-//         R _ A _ R
-//     `);
-
-//     let s = createNew({ board, start });
-//     assert.deepEquals(s.board, board, "Board state reflects board passed in options.");
-//     assert.deepEquals(s.turn, Side.Attackers, "Turn state reflects board passed in options.");
-//     assert.deepEquals(s.initial.board, board, "Initial board state is persisted immutably.");
-//     assert.deepEquals(s.initial.turn, Side.Attackers, "Initial turn state is persisted immutably.");
-
-//     s = play(s, [0, 2], [0, 1]);
-//     assert.deepEquals(s.initial.board, board, "Initial board state never changes.");
-//     assert.deepEquals(s.initial.turn, Side.Attackers, "Initial turn state never changes.");
-//     assert.deepEquals(s.turn, Side.Defenders, "Turn state cycles between attackers and defenders after plays.");
-
-//     assert.end();
-// });
