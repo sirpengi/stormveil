@@ -1,16 +1,13 @@
 import css from "classnames";
 import React from "react";
-import { best } from "stormveil/lib/ai";
+import { createNew, State, Team, Tile } from "stormveil";
 import { hnefatafl } from "stormveil/lib/boards";
-import { partition } from "stormveil/lib/partition";
-import { Side } from "stormveil/lib/side";
-import { createNew, encode, IState, moveable, moves, play, unmarshal } from "stormveil/lib/state";
-import { Tile } from "stormveil/lib/tile";
 
 type Vector = [number, number];
 
 interface IRootState {
-    game: IState;
+    game: State;
+    team: number;
     selected: Vector | false;
 }
 
@@ -19,9 +16,10 @@ export default class Root extends React.Component<{}, IRootState> {
         super(props);
         this.state = {
             game: createNew({
-                board: unmarshal(hnefatafl),
-                start: Side.Defenders,
+                board: hnefatafl,
+                start: Team.Defenders,
             }),
+            team: Team.Defenders,
             selected: false,
         };
     }
@@ -43,19 +41,20 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private renderParticipants() {
-        const { game: { turn } } = this.state;
-        return [Side.Attackers, Side.Defenders].map(side => (
+        const { game } = this.state;
+        return [Team.Attackers, Team.Defenders].map(side => (
             <div key={side} className={css({
                 "MatchElements__Participant": true,
-                "MatchElements__Participant--active": turn === side,
+                "MatchElements__Participant--active": game.turn() === side,
             })}>
-                {Side[side]}
+                {game.side[game.turn()]}
             </div>
         ));
     }
 
     private renderBoard() {
-        return this.board().map((row, y) => (
+        const { game } = this.state;
+        return game.board().map((row, y) => (
             <div key={y} className="MatchElements__BoardTileRow">
                 {row.map((tile, x) =>
                     this.renderTile(x, y, tile))}
@@ -73,7 +72,7 @@ export default class Root extends React.Component<{}, IRootState> {
                 "MatchElements__BoardTile--selectable": isSelectable && !isVictory,
                 "MatchElements__BoardTile--selected": isSelected,
             })}
-                onClick={() => (isSelected || isSelectable || !isVictory) && this.onSelect(x, y)}>
+                onClick={() => ((isSelected || isSelectable) && !isVictory) && this.onSelect(x, y)}>
                 {this.renderTileName(t)}
             </div>
         );
@@ -81,33 +80,35 @@ export default class Root extends React.Component<{}, IRootState> {
 
     private renderTileName = (t: Tile): string => {
         switch (t) {
-            case Tile.Empty:    return " ";
-            default:            return encode(t);
+            case Tile.Attacker:    return "A";
+            case Tile.Castle:      return "C";
+            case Tile.Defender:    return "D";
+            case Tile.Empty:       return " ";
+            case Tile.King:        return "K";
+            case Tile.None:        return "N";
+            case Tile.Refuge:      return "R";
+            case Tile.Sanctuary:   return "S";
+            case Tile.Throne:      return "T";
+            default:               return " ";
         }
     }
 
     private renderVictor() {
-        const { game: { victor } } = this.state;
+        const { game } = this.state;
+        const victor = game.victor();
         if (victor === null) {
             return null;
         }
 
         return (
             <div className="MatchElements__Victor">
-                {Side[victor]} wins!
+                {Team[victor]} wins!
             </div>
         );
     }
 
-    private side = () => Side.Defenders
-
-    private board = (): Tile[][] => partition(
-        this.state.game.board.tiles,
-        this.state.game.board.width,
-    )
-
     private onSelect = (x: number, y: number): void => {
-        const { selected } = this.state;
+        const { game, selected } = this.state;
         if (selected === false) {
             this.setState({ selected: [x, y] });
             return;
@@ -119,45 +120,32 @@ export default class Root extends React.Component<{}, IRootState> {
             return;
         }
 
-        this.onPlay(selected, [x, y]);
-        this.setState({ selected: false });
+        this.setState({ game: game.play(selected, [x, y]), selected: false });
         if (this.isVictorDeclared()) {
             return;
         }
 
         window.setTimeout(() => {
-            this.onAI();
+            const move = game.best(game.turn(), 3);
+            const [ a, b ] = move;
+            this.setState({ game: this.state.game.play(a, b) });
         }, 500);
     }
 
-    private onAI = () => {
-        const { game } = this.state;
-        const move = best(game.board, game.turn, 3);
-        if (move == null) {
-            throw new Error("");
-        }
-
-        const [ a, b ] = move;
-        this.onPlay(a, b);
-    }
-
-    private onPlay = (a: Vector, b: Vector): void => {
-        this.setState({ game: play(this.state.game, a, b) });
-    }
-
     private isSelectable = ([x, y]: Vector): boolean => {
-        const { game, selected } = this.state;
-        if (this.side() !== game.turn) {
+        const { game, selected, team } = this.state;
+        if (game.turn() !== team) {
             return false;
         }
 
         if (selected === false) {
-            return moveable(game.board, this.side())
-                .some(([ vx, vy ]) => vx === x && vy === y);
+            return game.candidates(team)
+                .some(([ vx, vy ]) =>
+                    vx === x && vy === y);
         }
 
         const [ sx, sy ] = selected;
-        return moves(game.board, [sx, sy])
+        return game.moves([sx, sy])
             .some(([ vx, vy ]) => vx === x && vy === y);
     }
 
@@ -172,6 +160,6 @@ export default class Root extends React.Component<{}, IRootState> {
     }
 
     private isVictorDeclared = (): boolean => {
-        return this.state.game.victor !== null;
+        return this.state.game.victor() !== null;
     }
 }

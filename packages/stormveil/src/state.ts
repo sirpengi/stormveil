@@ -8,11 +8,6 @@ export interface IBoard {
     width: number;
 }
 
-interface IOptions {
-    board: IBoard;
-    start: Side;
-}
-
 interface ISimpleState {
     board: IBoard;
     turn: Side;
@@ -283,7 +278,7 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
     return m;
 }
 
-export function encode(t: Tile): string {
+function encode(t: Tile): string {
     switch (t) {
         case Tile.Attacker:    return "A";
         case Tile.Castle:      return "C";
@@ -330,19 +325,6 @@ export function unmarshal(s: string): IBoard {
 
     const [ sample ] = tiles;
     return { tiles: flat(tiles), width: sample.length };
-}
-
-export function createNew(options: IOptions): IState {
-    return {
-        board: options.board,
-        turn: options.start,
-        history: [],
-        victor: null,
-        initial: {
-            board: options.board,
-            turn: options.start,
-        },
-    };
 }
 
 export function play(s: IState, a: Vector, b: Vector): IState {
