@@ -42,12 +42,12 @@ export default class Root extends React.Component<{}, IRootState> {
 
     private renderParticipants() {
         const { game } = this.state;
-        return [Team.Attackers, Team.Defenders].map(side => (
-            <div key={side} className={css({
+        return [Team.Attackers, Team.Defenders].map(team => (
+            <div key={team} className={css({
                 "MatchElements__Participant": true,
-                "MatchElements__Participant--active": game.turn() === side,
+                "MatchElements__Participant--active": game.turn() === team,
             })}>
-                {game.side[side]}
+                {game.team[team]}
             </div>
         ));
     }

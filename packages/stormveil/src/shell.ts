@@ -12,7 +12,7 @@ export interface IOptions {
 }
 
 export class Shell {
-    public readonly side = Team;
+    public readonly team = Team;
     public readonly tile = Tile;
     private state: IState | null = null;
 
