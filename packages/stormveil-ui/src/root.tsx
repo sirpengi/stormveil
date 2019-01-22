@@ -47,7 +47,7 @@ export default class Root extends React.Component<{}, IRootState> {
                 "MatchElements__Participant": true,
                 "MatchElements__Participant--active": game.turn() === side,
             })}>
-                {game.side[game.turn()]}
+                {game.side[side]}
             </div>
         ));
     }
