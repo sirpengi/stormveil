@@ -5,7 +5,7 @@
       "clean": "lerna clean",
       "prepare": "lerna bootstrap",
       "test": "lerna run --stream test",
-      "watch": "lerna run --stream watch"
+      "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
     "lerna": "^3.10.5"
