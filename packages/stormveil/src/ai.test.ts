@@ -1,6 +1,6 @@
 import test from "tape";
 import { best } from "./ai";
-import { unmarshal } from "./state";
+import { unmarshal } from "./serialization";
 import { Team } from "./team";
 
 test("Search for the best move", assert => {

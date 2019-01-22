@@ -1,6 +1,7 @@
 import test from "tape";
 import { hnefatafl } from "./boards";
-import { marshal, moves, resolve, unmarshal, victor } from "./state";
+import { marshal, unmarshal } from "./serialization";
+import { moves, resolve, victor } from "./state";
 import { Team } from "./team";
 import { Vector } from "./types/vector";
 

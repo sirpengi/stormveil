@@ -1,6 +1,7 @@
 import { best } from "./ai";
 import { partition } from "./partition";
-import { IState, moveable, moves, play, unmarshal, victor } from "./state";
+import { unmarshal } from "./serialization";
+import { IState, moveable, moves, play, victor } from "./state";
 import { Team } from "./team";
 import { Tile } from "./tile";
 import { Vector } from "./types/vector";
