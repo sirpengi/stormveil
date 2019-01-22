@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Tafl implementation in TypeScript",
   "main": "lib/index.js",
+  "sideEffects": false,
   "scripts": {
     "prepare": "tsc",
     "test": "tsc && tape lib/test.js"
