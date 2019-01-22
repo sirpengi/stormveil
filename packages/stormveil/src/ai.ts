@@ -77,10 +77,5 @@ function search(board: IBoard, turn: Team, depth: number): Move {
 }
 
 export function best(board: IBoard, turn: Team, depth: number): Move {
-    const result = search(board, turn, depth);
-    if (result == null) {
-        throw new Error("Unexpected null move value.");
-    }
-
-    return result;
+    return search(board, turn, depth);
 }
