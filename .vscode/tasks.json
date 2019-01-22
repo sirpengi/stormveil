@@ -3,7 +3,7 @@
     "tasks": [
         {
             "type": "npm",
-            "script": "test-engine",
+            "script": "test",
             "group": {
                 "kind": "build",
                 "isDefault": true

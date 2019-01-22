@@ -2,8 +2,10 @@
   "name": "root",
   "private": true,
   "scripts": {
+      "clean": "lerna clean",
       "prepare": "lerna bootstrap",
-      "test-engine": "cd packages/stormveil && npm run-script test"
+      "test": "lerna run --stream test",
+      "watch": "lerna run --stream watch"
   },
   "devDependencies": {
     "lerna": "^3.10.5"

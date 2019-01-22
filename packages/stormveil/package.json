@@ -6,7 +6,8 @@
   "sideEffects": false,
   "scripts": {
     "prepare": "tsc",
-    "test": "tsc && tape lib/test.js"
+    "test": "tsc && tape lib/test.js",
+    "watch": "tsc --watch"
   },
   "author": "Samuel Ferrell",
   "license": "MIT",
