@@ -13,13 +13,8 @@ interface ISimpleState {
     turn: Team;
 }
 
-interface IMove {
-    a: Vector;
-    b: Vector;
-}
-
 export interface IState extends ISimpleState {
-    history: IMove[];
+    history: Array<[Vector, Vector]>;
     initial: ISimpleState;
 }
 
@@ -330,6 +325,6 @@ export function play(s: IState, a: Vector, b: Vector): IState {
     const nextState = { ...s };
     nextState.board = resolve(nextState.board, a, b);
     nextState.turn = opponent(nextState.turn);
-    nextState.history = nextState.history.concat({ a, b });
+    nextState.history = nextState.history.concat([a, b]);
     return nextState;
 }
