@@ -128,7 +128,7 @@ export default class Root extends React.Component<{}, IRootState> {
         window.setTimeout(() => {
             const move = game.best(game.turn(), 3);
             const [ a, b ] = move;
-            this.setState({ game: this.state.game.play(a, b) });
+            this.setState({ game: game.play(a, b) });
         }, 500);
     }
 
