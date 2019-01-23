@@ -28,8 +28,8 @@ body {
     align-items: center;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     max-width: 900px;
-    margin-top: 3%;
 }
 
 .Match_Participants {
@@ -44,17 +44,22 @@ body {
 
 .Match_Participant--Playing {
     color: rgb(0, 0, 0);
+    text-decoration: underline;
 }
 
 .Match_Participant_Title {
     font-size: 48px;
     font-family: 'EB Garamond', serif;
+    text-transform: uppercase;
 }
 
 .Board_Tile_Face {
     shape-rendering: crispEdges;
-    stroke: rgba(0, 0, 0, 0.15);
-    stroke-width: 0.20px;
+}
+
+.Board_Tile_Face--Top {
+    stroke: rgba(0, 0, 0, 0.10);
+    stroke-width: 1px;
 }
 
 .Board_Tile--Selectable {

@@ -45,13 +45,11 @@ export class Shell {
         return best(this.getState().board, t, depth);
     }
 
-    public board(initial: boolean = false): Array<{ x: number, y: number, t: Tile }> {
-        const board = initial
-            ? this.getState().initial.board
-            : this.getState().board;
-        return board.tiles.map((t, i) => {
-            const [ x, y ] = vec(board.width, i);
-            return { x, y, t };
+    public board(): Array<{ x: number, y: number, t: Tile, i: Tile }> {
+        const state = this.getState();
+        return state.board.tiles.map((t, i) => {
+            const [ x, y ] = vec(state.board.width, i);
+            return { x, y, t, i: state.initial.board.tiles[i] };
         });
     }
 

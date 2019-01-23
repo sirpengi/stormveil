@@ -12,6 +12,24 @@ interface IRootState {
     selected: [number, number] | false;
 }
 
+interface IRootProps {
+    tileSize: number;
+    viewAngle: number;
+}
+
+interface IBoardTile {
+    x: number;
+    y: number;
+    t: Tile;
+    i: Tile;
+}
+
+interface ICamera {
+    a: number;
+    s: number;
+    z: number;
+}
+
 enum Face {
     Overlay,
     Top,
@@ -19,11 +37,14 @@ enum Face {
     Right,
 }
 
-export default class Root extends React.Component<{}, IRootState> {
-    private camera = { a: 12, s: 30, z: 16 };
+export default class Root extends React.Component<IRootProps, IRootState> {
+    private camera: ICamera;
 
-    constructor(props: {}) {
+    constructor(props: IRootProps) {
         super(props);
+
+        const { viewAngle, tileSize } = props;
+        this.camera = { a: viewAngle, s: tileSize / 2, z: 16 };
         this.state = {
             game: createNew({
                 board: hnefatafl,
@@ -34,24 +55,15 @@ export default class Root extends React.Component<{}, IRootState> {
         };
     }
 
+    public static defaultProps = {
+        tileSize: 60,
+        viewAngle: 12,
+    };
+
     public render() {
-        const { game } = this.state;
         return (
             <div className="Layout_Content">
-                <div className="Match_Participants Layout_Header">
-                    {[Team.Attackers, Team.Defenders].map(team => {
-                        return (
-                            <div key={team} className={css({
-                                "Match_Participant": true,
-                                "Match_Participant--Playing": team === game.turn()
-                            })}>
-                                <div className="Match_Participant_Title">
-                                    {Team[team]}
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
+                {this.renderParticipants()}
                 <svg className="Match_Board" height="420" width="660">
                     <g transform="translate(330, 40)">
                         {this.renderTiles()}
@@ -61,44 +73,67 @@ export default class Root extends React.Component<{}, IRootState> {
         );
     }
 
-    private renderTiles() {
+    private renderParticipants = () => {
         const { game } = this.state;
-        return game.board().map(({ x, y, t }) => {
-            const [ tx, ty ] = this.getTilePosition(x, y);
-            return (
-                <g key={[x, y].join(", ")}
-                    onClick={() => this.onSelectTile(x, y)}
-                    className={css({
-                        "Board_Tile": true,
-                        "Board_Tile--Selectable": this.isSelectable(x, y),
-                        "Board_Tile--Selected": this.isSelected(x, y),
-                    })}
-                    style={{ transform: `translate(${tx}px, ${ty}px)` }}>
-                    <g className="Board_Tile_Faces">
-                        {[Face.Top, Face.Overlay, Face.Left, Face.Right].map(face => {
-                            const classNames = css(
-                                `Board_Tile_Face`,
-                                `Board_Tile_Face--${Face[face]}`
-                            );
-                            const color = this.getFaceColor(x, y, face).toString();
-                            return (
-                                <polygon
-                                    className={classNames}
-                                    key={face}
-                                    style={{ fill: color }}
-                                    points={this.getFacePath(x, y, face).join(", ")}>
-                                </polygon>
-                            );
-                        })}
-                    </g>
-                    <g className="Board_Tile_Content">{this.renderTile(t)}</g>
-                </g>
-            );
-        });
+        return (
+            <div className="Match_Participants Layout_Header">
+                {[Team.Attackers, Team.Defenders].map(team => (
+                        <div key={team} className={css({
+                            "Match_Participant": true,
+                            "Match_Participant--Playing": team === game.turn()
+                        })}>
+                            <div className="Match_Participant_Title">
+                                {Team[team]}
+                            </div>
+                        </div>
+                    ))}
+            </div>
+        );
     }
 
-    private renderTile = (t: Tile) => {
-        switch (t) {
+    private renderTiles = () =>
+        this.state.game.board().map(this.renderTile)
+
+    private renderTile = (tile: IBoardTile) => {
+        const { x, y } = tile;
+        const [ tx, ty ] = this.getTilePosition(tile);
+        const color = this.getFaceColor(tile);
+        const path = this.getFacePath(tile);
+        return (
+            <g
+                key={[x, y].join(", ")}
+                onClick={() => this.onSelectTile(tile)}
+                style={{ transform: `translate(${tx}px, ${ty}px)` }}
+                className={css({
+                    "Board_Tile": true,
+                    "Board_Tile--Selectable": this.isSelectable(x, y),
+                    "Board_Tile--Selected": this.isSelected(x, y),
+                })}>
+                <g className="Board_Tile_Faces">
+                    {[
+                        Face.Top,
+                        Face.Overlay,
+                        Face.Left,
+                        Face.Right,
+                    ].map(face => (
+                        <polygon
+                            key={face}
+                            points={path(face).join(", ")}
+                            style={{ fill: color(face).toString() }}
+                            className={css(
+                                `Board_Tile_Face`,
+                                `Board_Tile_Face--${Face[face]}`
+                            )}>
+                        </polygon>
+                    ))}
+                </g>
+                <g className="Board_Tile_Content">{this.renderTileContent(tile)}</g>
+            </g>
+        );
+    }
+
+    private renderTileContent = (tile: IBoardTile) => {
+        switch (tile.t) {
             case Tile.Attacker:
                 return (
                     <g transform="translate(-7, -7)">
@@ -108,68 +143,69 @@ export default class Root extends React.Component<{}, IRootState> {
                 );
             case Tile.Defender:
                 return ( <circle r="7" stroke="white" fill="none" strokeWidth="2" /> );
-            case Tile.King:
-                return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
             case Tile.Castle:
-                return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
-            case Tile.Throne:
+            case Tile.King:
             case Tile.Refuge:
             case Tile.Sanctuary:
+            case Tile.Throne:
+                return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
             default:
                 return null;
         }
     }
 
-    private getTileColor = (x: number, y: number): Color.HSLColor => {
+    private getTileColor = (tile: IBoardTile): Color.HSLColor => {
+        const { x, y } = tile;
         const n = noise(x, y, 5, 3, 0.035);
         const s = (range: [number, number]) =>
             Scale.scaleLinear().domain([0, 1]).range(range)(n);
 
-        if (this.isStartingTile(x, y)) {
-            return Color.hsl(40, 0.18, s([0.40, 0.50]), 1);
+        if (this.isStartingTile(tile)) {
+            return Color.hsl(40, 0.22, s([0.40, 0.50]), 1);
         }
 
         return Color.hsl(120, 0.20, s([0.40, 0.45]), 1);
     }
 
-    private getFaceColor = (x: number, y: number, face: Face): Color.Color => {
-        const color = this.getTileColor(x, y);
+    private getFaceColor = (tile: IBoardTile) => (face: Face): Color.Color => {
+        const color = this.getTileColor(tile);
         switch (face) {
             case Face.Overlay:
                 return color.brighter(1);
             case Face.Top:
                 return color;
             case Face.Left:
-                return color.darker(1);
+                return color.darker(0.75);
             case Face.Right:
-                return color.darker(2.5);
+                return color.darker(2);
         }
     }
 
-    private getFacePath = (x: number, y: number, face: Face) => {
-        const { a, s, z: zi } = this.camera;
-        const isInitial = this.isStartingTile(x, y);
-        const z = isInitial ? zi + 4 : zi;
+    private getFacePath = (tile: IBoardTile) => (face: Face) => {
+        const { a, s, z } = this.camera;
+        const h = this.isStartingTile(tile) ? z + 4 : z;
         switch (face) {
             case Face.Overlay:
             case Face.Top:
                 return [0, -s + a, s, 0, 0, s - a, -s, 0];
             case Face.Left:
-                return [-s, 0, -s, z, 0, (s - a) + z, 0, (s - a)];
+                return [-s, 0, -s, h, 0, (s - a) + h, 0, (s - a)];
             case Face.Right:
-                return [s, 0, s, z, 0, (s - a) + z, 0, (s - a)];
+                return [s, 0, s, h, 0, (s - a) + h, 0, (s - a)];
         }
     }
 
-    private getTilePosition = (x: number, y: number) => {
-        const { a, s, z: zi } = this.camera;
-        const xpos = (x - y) * s;
-        const ypos = (x + y) * (s - a);
-        const zpos = this.isStartingTile(x, y) ? zi + 4 : zi;
-        return [xpos, ypos - zpos];
+    private getTilePosition = (tile: IBoardTile): [number, number] => {
+        const { a, s, z } = this.camera;
+        const h = this.isStartingTile(tile) ? z + 4 : z;
+        return [
+            (tile.x - tile.y) * s,
+            (tile.x + tile.y) * (s - a) - h
+        ];
     };
 
-    private onSelectTile = (x: number, y: number): void => {
+    private onSelectTile = (tile: IBoardTile): void => {
+        const { x, y } = tile;
         const { game, selected } = this.state;
         if (this.isSelected(x, y)) {
             this.setState({ selected: false });
@@ -185,7 +221,7 @@ export default class Root extends React.Component<{}, IRootState> {
         }
 
         this.setState({ game: game.play(selected, [x, y]), selected: false });
-        if (this.isVictorDeclared()) {
+        if (game.victor() !== null) {
             return;
         }
 
@@ -195,6 +231,9 @@ export default class Root extends React.Component<{}, IRootState> {
             this.setState({ game: game.play(a, b) });
         }, 500);
     }
+
+    private isStartingTile = (tile: IBoardTile): boolean =>
+        tile.i !== Tile.Empty
 
     private isSelectable = (x: number, y: number): boolean => {
         const { game, selected, team } = this.state;
@@ -221,17 +260,5 @@ export default class Root extends React.Component<{}, IRootState> {
 
         const [ sx, sy ] = selected;
         return sx === x && sy === y;
-    }
-
-    private isStartingTile = (x: number, y: number): boolean =>
-        this.state.game.board(true).some(
-            t =>
-                t.x === x &&
-                t.y === y &&
-                t.t !== Tile.Empty
-        );
-
-    private isVictorDeclared = (): boolean => {
-        return this.state.game.victor() !== null;
     }
 }
