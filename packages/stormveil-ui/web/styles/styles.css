@@ -1,71 +1,74 @@
-body {
-    font-family: sans-serif;
-}
-
 @keyframes pulse {
-    0%   { background-color: rgba(0, 0, 0, 0.00); }
-    25%  { background-color: rgba(0, 0, 0, 0.10); }
-    75%  { background-color: rgba(0, 0, 0, 0.10); }
-    100% { background-color: rgba(0, 0, 0, 0.00); }
+    0%   { opacity: 0.30; }
+    25%  { opacity: 0; }
+    75%  { opacity: 0; }
+    100% { opacity: 0.30; }
 }
 
-.MatchElements {
-    margin-left: 32px;
-    margin-top: 32px;
-    max-width: 265px;
+body, html {
+    height: 100%;
 }
 
-.MatchElements__Participants {
+body {
+    background-color: rgb(255, 255, 252);
+    font-family: 'Open Sans', sans-serif;
+}
+
+.Layout_Root,
+.Layout_Content {
+    height: 100%;
+}
+
+.Layout_Root {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
 
-.MatchElements__Participant {
-    color: #bbb;
-}
-
-.MatchElements__Participant--active {
-    color: #000;
-}
-
-.MatchElements__Victor {
-    margin-top: 8px;
-    text-align: center;
-}
-
-.MatchElements__Board {
-    border-bottom: 1px dotted #ddd;
-    border-left: 1px dotted #ddd;
+.Layout_Content {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    height: 264px;
-    width: 264px;
+    max-width: 900px;
+    margin-top: 3%;
 }
 
-.MatchElements__BoardTileRow {
+.Match_Participants {
+    justify-content: space-between;
     display: flex;
+    width: 100%;
 }
 
-.MatchElements__BoardTile {
-    align-items: center;
-    border-right: 1px dotted #ddd;
-    border-top: 1px dotted #ddd;
-    cursor: default;
-    display: flex;
-    font-family: 'Consolas', monospace;
-    height: 24px;
-    justify-content: center;
-    text-align: center;
-    white-space: pre;
-    width: 24px;
+.Match_Participant {
+    color: rgb(190, 190, 190);
 }
 
-.MatchElements__BoardTile--selected {
-    background-color: rgba(0, 0, 0, 0.10);
+.Match_Participant--Playing {
+    color: rgb(0, 0, 0);
 }
 
-.MatchElements__BoardTile--selectable {
-    animation: pulse 1250ms ease-in-out infinite;
+.Match_Participant_Title {
+    font-size: 48px;
+    font-family: 'EB Garamond', serif;
+}
+
+.Board_Tile_Face {
+    shape-rendering: crispEdges;
+    stroke: rgba(0, 0, 0, 0.15);
+    stroke-width: 0.20px;
+}
+
+.Board_Tile--Selectable {
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.10);
+}
+
+.Board_Tile--Selectable .Board_Tile_Face--Overlay {
+    animation: pulse 1250ms ease-in infinite;
+}
+
+.Board_Tile--Selected .Board_Tile_Face--Overlay {
+    opacity: 0.80;
+}
+
+.Board_Tile_Face--Overlay {
+    opacity: 0;
 }
