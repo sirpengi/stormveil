@@ -1,7 +1,6 @@
 import { best } from "./ai";
-import { partition } from "./partition";
 import { unmarshal } from "./serialization";
-import { IState, moveable, moves, play, victor } from "./state";
+import { IState, vec, moveable, moves, play, victor } from "./state";
 import { Team } from "./team";
 import { Tile } from "./tile";
 import { Vector } from "./types/vector";
@@ -46,9 +45,14 @@ export class Shell {
         return best(this.getState().board, t, depth);
     }
 
-    public board(): Tile[][] {
-        const state = this.getState();
-        return partition(state.board.tiles, state.board.width);
+    public board(initial: boolean = false): Array<{ x: number, y: number, t: Tile }> {
+        const board = initial
+            ? this.getState().initial.board
+            : this.getState().board;
+        return board.tiles.map((t, i) => {
+            const [ x, y ] = vec(board.width, i);
+            return { x, y, t };
+        });
     }
 
     public turn(): Team {
