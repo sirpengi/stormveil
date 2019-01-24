@@ -63,7 +63,10 @@ export default class Root extends React.Component<IRootProps, IRootState> {
     public render() {
         return (
             <div className="Layout_Content">
+            <div className="Match_Participants Layout_Header">
                 {this.renderParticipants()}
+            </div>
+                
                 <svg className="Match_Board" height="420" width="660">
                     <g transform="translate(330, 40)">
                         {this.renderTiles()}
@@ -75,20 +78,22 @@ export default class Root extends React.Component<IRootProps, IRootState> {
 
     private renderParticipants = () => {
         const { game } = this.state;
-        return (
-            <div className="Match_Participants Layout_Header">
-                {[Team.Attackers, Team.Defenders].map(team => (
-                        <div key={team} className={css({
-                            "Match_Participant": true,
-                            "Match_Participant--Playing": team === game.turn()
-                        })}>
-                            <h1 className="Match_Participant_Title">
-                                {Team[team]}
-                            </h1>
-                        </div>
-                    ))}
-            </div>
-        );
+        const isInitialState = game.history().length === 0;
+        return (<>
+            {[Team.Attackers, Team.Defenders].map(team => (
+                <div key={team}
+                    onClick={() => isInitialState && this.onStartNew(team)}
+                    className={css({
+                        "Match_Participant": true,
+                        "Match_Participant--Playing": team === game.turn(),
+                        "Match_Participant--Selectable": team !== game.turn() && isInitialState
+                    })}>
+                    <h1 className="Match_Participant_Title">
+                        {Team[team]}
+                    </h1>
+                </div>
+            ))}
+        </>);
     }
 
     private renderTiles = () =>
@@ -203,6 +208,16 @@ export default class Root extends React.Component<IRootProps, IRootState> {
             (tile.x + tile.y) * (s - a) - h
         ];
     };
+
+    private onStartNew = (team: Team): void => {
+        this.setState({
+            game: createNew({
+                board: hnefatafl,
+                start: team,
+            }),
+            team: team
+        });
+    }
 
     private onSelectTile = (tile: IBoardTile): void => {
         const { x, y } = tile;

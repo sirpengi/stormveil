@@ -45,6 +45,10 @@ export class Shell {
         return best(this.getState().board, t, depth);
     }
 
+    public history() {
+        return this.getState().history;
+    }
+
     public board(): Array<{ x: number, y: number, t: Tile, i: Tile }> {
         const state = this.getState();
         return state.board.tiles.map((t, i) => {
