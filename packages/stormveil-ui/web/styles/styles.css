@@ -5,18 +5,20 @@
     100% { opacity: 0.30; }
 }
 
-body, html {
-    height: 100%;
-}
-
 body {
     background-color: rgb(255, 255, 252);
+    color: rgb(72, 72, 72);
     font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
 }
 
-.Layout_Root,
-.Layout_Content {
-    height: 100%;
+h1, h2, h3, h4, h5, h6 {
+    color: rgb(32, 32, 32);
+    font-family: 'EB Garamond', serif;
+}
+
+h1 {
+    font-size: 48px;
 }
 
 .Layout_Root {
@@ -25,31 +27,26 @@ body {
 }
 
 .Layout_Content {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: 900px;
+    margin-top: 5%;
+    max-width: 660px;
 }
 
 .Match_Participants {
     justify-content: space-between;
     display: flex;
-    width: 100%;
 }
 
-.Match_Participant {
+.Match_Participant_Title {
     color: rgb(190, 190, 190);
 }
 
-.Match_Participant--Playing {
+.Match_Participant--Playing .Match_Participant_Title {
     color: rgb(0, 0, 0);
     text-decoration: underline;
 }
 
 .Match_Participant_Title {
     font-size: 48px;
-    font-family: 'EB Garamond', serif;
     text-transform: uppercase;
 }
 

@@ -82,9 +82,9 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                             "Match_Participant": true,
                             "Match_Participant--Playing": team === game.turn()
                         })}>
-                            <div className="Match_Participant_Title">
+                            <h1 className="Match_Participant_Title">
                                 {Team[team]}
-                            </div>
+                            </h1>
                         </div>
                     ))}
             </div>
