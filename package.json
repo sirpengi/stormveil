@@ -2,10 +2,10 @@
   "name": "root",
   "private": true,
   "scripts": {
-      "clean": "lerna clean",
-      "prepare": "lerna bootstrap",
-      "test": "lerna run --stream test",
-      "watch": "lerna run --parallel watch"
+    "clean": "lerna clean",
+    "prepare": "lerna bootstrap",
+    "test": "lerna run --stream test",
+    "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
     "lerna": "^3.10.5"
