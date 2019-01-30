@@ -150,6 +150,19 @@ test("Board captures and moves", (assert) => {
             [1, 2],
         ],
         [
+            "Attackers capture the king against the edge of the board.",
+            `
+                A K A
+                _ _ A
+            `,
+            `
+                A _ A
+                _ A _
+            `,
+            [2, 1],
+            [1, 1],
+        ],
+        [
             "Defenders may use thrones as anvils.",
             `D _ A T`,
             `_ D _ T`,

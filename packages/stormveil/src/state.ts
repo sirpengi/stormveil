@@ -134,10 +134,10 @@ function into(a: Tile, b: Tile): Tile {
 }
 
 export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
-    const tile = get(s, ax, ay);
+    const t = get(s, ax, ay);
     const state = clone(s);
-    set(state, ax, ay, away(tile));
-    set(state, bx, by, into(inside(tile), get(state, bx, by)));
+    set(state, ax, ay, away(t));
+    set(state, bx, by, into(inside(t), get(state, bx, by)));
 
     for (let i = 0; i < 4; i += 1) {
         const ox = offsets[i][0];
@@ -147,8 +147,8 @@ export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
 
         // The neighboring tile is not an enemy, this offset can not result
         // in a capture.
-        const neighbor = get(state, cx, cy);
-        if (!capturable(neighbor) || !hostile(tile, neighbor)) {
+        const n = get(state, cx, cy);
+        if (!capturable(n) || !hostile(t, n)) {
             continue;
         }
 
@@ -157,23 +157,38 @@ export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
         // or on the same side as the moving tile, the center tile is
         // considered captured.
         const anvil = get(state, bx + (ox * 2), by + (oy * 2));
-        if (hostile(neighbor, anvil) && neighbor !== Tile.King) {
+        if (hostile(n, anvil) && n !== Tile.King) {
             capture(state, cx, cy);
         }
 
         // Attackers may capture the king only when they have the king
         // surrounded on all four sides.
-        if (tile === Tile.Attacker &&
-            neighbor === Tile.King &&
-            get(state, cx, cy + 1) === Tile.Attacker &&
-            get(state, cx, cy - 1) === Tile.Attacker &&
-            get(state, cx + 1, cy) === Tile.Attacker &&
-            get(state, cx - 1, cy) === Tile.Attacker) {
+        if (eq(t, Tile.Attacker) &&
+            eq(n, Tile.King) &&
+            eq(get(state, cx, cy + 1), Tile.Attacker, Tile.None) &&
+            eq(get(state, cx, cy - 1), Tile.Attacker, Tile.None) &&
+            eq(get(state, cx + 1, cy), Tile.Attacker, Tile.None) &&
+            eq(get(state, cx - 1, cy), Tile.Attacker, Tile.None)) {
             capture(state, cx, cy);
         }
     }
 
     return state;
+}
+
+function eq(...ts: Tile[]): boolean {
+    const l = ts.length;
+    if (l < 2) {
+        return true;
+    }
+
+    for (let i = 1; i < l; i += 1) {
+        if (ts[0] === ts[i]) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function allowed(t: Tile, u: Tile): boolean {
@@ -194,15 +209,15 @@ export function victor(s: IBoard): Team | null {
     let af = false;
     for (let i = 0; i < s.tiles.length; i += 1) {
         const t = s.tiles[i];
-        if (t === Tile.Sanctuary) {
+        if (eq(t, Tile.Sanctuary)) {
             return Team.Defenders;
         }
 
-        if (t === Tile.King || t === Tile.Castle) {
+        if (eq(t, Tile.King, Tile.Castle)) {
             kf = true;
         }
 
-        if (t === Tile.Attacker) {
+        if (eq(t, Tile.Attacker)) {
             af = true;
         }
     }
