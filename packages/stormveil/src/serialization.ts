@@ -8,30 +8,30 @@ function flat<T>([first, ...rest]: T[][]): T[] {
 
 function encode(t: Tile): string {
     switch (t) {
-        case Tile.Attacker:    return "A";
-        case Tile.Castle:      return "C";
-        case Tile.Defender:    return "D";
-        case Tile.Empty:       return "_";
-        case Tile.King:        return "K";
-        case Tile.None:        return "N";
-        case Tile.Refuge:      return "R";
-        case Tile.Sanctuary:   return "S";
-        case Tile.Throne:      return "T";
-        default:               return " ";
+        case Tile.Attk: return "A";
+        case Tile.Cast: return "C";
+        case Tile.Defn: return "D";
+        case Tile.Empt: return "_";
+        case Tile.King: return "K";
+        case Tile.None: return "N";
+        case Tile.Refu: return "R";
+        case Tile.Sanc: return "S";
+        case Tile.Thrn: return "T";
+        default:        return " ";
     }
 }
 
 function decode(s: string): Tile {
     switch (s) {
-        case "A": return Tile.Attacker;
-        case "C": return Tile.Castle;
-        case "D": return Tile.Defender;
-        case "_": return Tile.Empty;
+        case "A": return Tile.Attk;
+        case "C": return Tile.Cast;
+        case "D": return Tile.Defn;
+        case "_": return Tile.Empt;
         case "K": return Tile.King;
         case "N": return Tile.None;
-        case "R": return Tile.Refuge;
-        case "S": return Tile.Sanctuary;
-        case "T": return Tile.Throne;
+        case "R": return Tile.Refu;
+        case "S": return Tile.Sanc;
+        case "T": return Tile.Thrn;
         default:  return Tile.None;
     }
 }

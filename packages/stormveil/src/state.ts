@@ -2,6 +2,12 @@ import { Team } from "./team";
 import { Tile } from "./tile";
 import { Vector } from "./types/vector";
 
+const enum Mask {
+    Capturable = Tile.Attk | Tile.Defn | Tile.King | Tile.Cast,
+    KingAnvils = Tile.Attk | Tile.None,
+    KingLike   = Tile.King | Tile.Cast | Tile.Sanc,
+}
+
 export interface IBoard {
     tiles: Tile[];
     width: number;
@@ -17,7 +23,7 @@ export interface IState extends ISimpleState {
     initial: ISimpleState;
 }
 
-const offsets: Vector[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+const offsets: number[] = [0, -1, 1, 0, 0, 1, -1, 0];
 
 function clone(s: IBoard): IBoard {
     return { tiles: s.tiles.slice(), width: s.width };
@@ -49,25 +55,17 @@ function capture(s: IBoard, x: number, y: number): void {
 }
 
 export function capturable(t: Tile): boolean {
-    switch (t) {
-        case Tile.Throne:
-        case Tile.Refuge:
-        case Tile.Empty:
-        case Tile.None:
-            return false;
-        default:
-            return true;
-    }
+    return Boolean(t & Mask.Capturable);
 }
 
 export function team(t: Tile): Team {
     switch (t) {
-        case Tile.Defender:
+        case Tile.Defn:
         case Tile.King:
-        case Tile.Castle:
-        case Tile.Sanctuary:
+        case Tile.Cast:
+        case Tile.Sanc:
             return Team.Defenders;
-        case Tile.Attacker:
+        case Tile.Attk:
             return Team.Attackers;
         default:
             return Team.None;
@@ -86,11 +84,11 @@ export function opponent(t: Team): Team {
 }
 
 function hostile(a: Tile, b: Tile): boolean {
-    if (a === Tile.Throne || b === Tile.Throne) {
+    if (a === Tile.Thrn || b === Tile.Thrn) {
         return true;
     }
 
-    if (a === Tile.Refuge || b === Tile.Refuge) {
+    if (a === Tile.Refu || b === Tile.Refu) {
         return true;
     }
 
@@ -103,8 +101,8 @@ function hostile(a: Tile, b: Tile): boolean {
 
 function inside(a: Tile): Tile {
     switch (a) {
-        case Tile.Castle:
-        case Tile.Sanctuary:
+        case Tile.Cast:
+        case Tile.Sanc:
             return Tile.King;
         default:
             return a;
@@ -113,62 +111,67 @@ function inside(a: Tile): Tile {
 
 function away(a: Tile): Tile {
     switch (a) {
-        case Tile.Castle:
-            return Tile.Throne;
-        case Tile.Sanctuary:
-            return Tile.Refuge;
+        case Tile.Cast:
+            return Tile.Thrn;
+        case Tile.Sanc:
+            return Tile.Refu;
         default:
-            return Tile.Empty;
+            return Tile.Empt;
     }
 }
 
 function into(a: Tile, b: Tile): Tile {
     switch (b) {
-        case Tile.Throne:
-            return Tile.Castle;
-        case Tile.Refuge:
-            return Tile.Sanctuary;
+        case Tile.Thrn:
+            return Tile.Cast;
+        case Tile.Refu:
+            return Tile.Sanc;
         default:
             return a;
     }
 }
 
 export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
-    const t = get(s, ax, ay);
     const state = clone(s);
-    set(state, ax, ay, away(t));
-    set(state, bx, by, into(inside(t), get(state, bx, by)));
+    const tile = get(state, ax, ay);
+    set(state, ax, ay, away(tile));
+    set(state, bx, by, into(inside(tile), get(state, bx, by)));
 
-    for (let i = 0; i < 4; i += 1) {
-        const ox = offsets[i][0];
-        const oy = offsets[i][1];
+    for (let i = 0; i < 8; i += 2) {
+        const ox = offsets[i];
+        const oy = offsets[i + 1];
         const cx = bx + ox;
         const cy = by + oy;
+        const adjc = get(state, cx, cy);
 
-        // The neighboring tile is not an enemy, this offset can not result
-        // in a capture.
-        const n = get(state, cx, cy);
-        if (!capturable(n) || !hostile(t, n)) {
+        // Continue early when the adjacent tile is not a capturable tile.
+        if (adjc & ~Mask.Capturable) {
             continue;
         }
 
-        // The neighboring tile is an enemy: determine if it is being captured
+        // Continue early when the adjacent tile is not hostile to the playing
+        // tile.
+        if (!hostile(tile, adjc)) {
+            continue;
+        }
+
+        // The adjacent tile is an enemy: determine if it is being captured
         // by checking the next tile across. When the "anvil" is either None
         // or on the same side as the moving tile, the center tile is
         // considered captured.
-        const anvil = get(state, bx + (ox * 2), by + (oy * 2));
-        if (hostile(n, anvil) && n !== Tile.King) {
+        const vx = bx + (ox * 2);
+        const vy = by + (oy * 2);
+        if (hostile(adjc, get(state, vx, vy)) && (adjc & ~Mask.KingLike)) {
             capture(state, cx, cy);
         }
 
         // Attackers may capture the king only when they have the king
         // surrounded on all four sides.
-        if (eq(t, Tile.Attacker) &&
-            eq(n, Tile.King) &&
-            eq(get(state, cx, cy + 1), Tile.Attacker, Tile.None) &&
-            eq(get(state, cx, cy - 1), Tile.Attacker, Tile.None) &&
-            eq(get(state, cx + 1, cy), Tile.Attacker, Tile.None) &&
-            eq(get(state, cx - 1, cy), Tile.Attacker, Tile.None)) {
+        if ((tile & Tile.Attk) && (adjc & Tile.King)
+            && (get(state, cx, cy + 1) & Mask.KingAnvils)
+            && (get(state, cx, cy - 1) & Mask.KingAnvils)
+            && (get(state, cx + 1, cy) & Mask.KingAnvils)
+            && (get(state, cx - 1, cy) & Mask.KingAnvils)) {
             capture(state, cx, cy);
         }
     }
@@ -176,28 +179,13 @@ export function resolve(s: IBoard, [ax, ay]: Vector, [bx, by]: Vector): IBoard {
     return state;
 }
 
-function eq(...ts: Tile[]): boolean {
-    const l = ts.length;
-    if (l < 2) {
-        return true;
-    }
-
-    for (let i = 1; i < l; i += 1) {
-        if (ts[0] === ts[i]) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 function allowed(t: Tile, u: Tile): boolean {
-    if (u === Tile.Empty) {
+    if (u & Tile.Empt) {
         return true;
     }
 
-    if ((t === Tile.King || t === Tile.Castle || t === Tile.Sanctuary) &&
-        (u === Tile.Throne || u === Tile.Refuge)) {
+    if ((t & Mask.KingLike) &&
+        (u & (Tile.Thrn | Tile.Refu))) {
         return true;
     }
 
@@ -209,15 +197,15 @@ export function victor(s: IBoard): Team | null {
     let af = false;
     for (let i = 0; i < s.tiles.length; i += 1) {
         const t = s.tiles[i];
-        if (eq(t, Tile.Sanctuary)) {
+        if (t === Tile.Sanc) {
             return Team.Defenders;
         }
 
-        if (eq(t, Tile.King, Tile.Castle)) {
+        if (t & (Tile.King | Tile.Cast)) {
             kf = true;
         }
 
-        if (eq(t, Tile.Attacker)) {
+        if (t === Tile.Attk) {
             af = true;
         }
     }
@@ -256,8 +244,9 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
     const m = [];
     const t = get(s, ax, ay);
 
-    for (let i = 0; i < 4; i += 1) {
-        const [ ox, oy ] = offsets[i];
+    for (let i = 0; i < 8; i += 2) {
+        const ox = offsets[i];
+        const oy = offsets[i + 1];
         for (let k = 1; k < Infinity; k += 1) {
             const bx = ax + (ox * k);
             const by = ay + (oy * k);
@@ -266,7 +255,7 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
             }
 
             const n = get(s, bx, by);
-            if (t === Tile.Defender && n === Tile.Throne) {
+            if (t & Tile.Defn && n & Tile.Thrn) {
                 continue;
             }
 
@@ -283,9 +272,10 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
 }
 
 export function play(s: IState, a: Vector, b: Vector): IState {
-    const nextState = { ...s };
-    nextState.board = resolve(nextState.board, a, b);
-    nextState.turn = opponent(nextState.turn);
-    nextState.history = nextState.history.concat([a, b]);
-    return nextState;
+    return {
+        board: resolve(s.board, a, b),
+        history: s.history.concat([a, b]),
+        turn: opponent(s.turn),
+        initial: s.initial,
+    };
 }

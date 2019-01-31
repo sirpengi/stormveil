@@ -89,7 +89,7 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                         "Match_Participant--Selectable": team !== game.turn() && isInitialState
                     })}>
                     <h1 className="Match_Participant_Title">
-                        {Team[team]}
+                        {this.getTeamName(team)}
                     </h1>
                 </div>
             ))}
@@ -139,23 +139,31 @@ export default class Root extends React.Component<IRootProps, IRootState> {
 
     private renderTileContent = (tile: IBoardTile) => {
         switch (tile.t) {
-            case Tile.Attacker:
+            case Tile.Attk:
                 return (
                     <g transform="translate(-7, -7)">
                         <line x1="0" y1="0" x2="14" y2="14" stroke="black" strokeWidth="2" />
                         <line x1="0" y1="14" x2="14" y2="0" stroke="black" strokeWidth="2" />
                     </g>
                 );
-            case Tile.Defender:
+            case Tile.Defn:
                 return ( <circle r="7" stroke="white" fill="none" strokeWidth="2" /> );
-            case Tile.Castle:
+            case Tile.Cast:
             case Tile.King:
-            case Tile.Refuge:
-            case Tile.Sanctuary:
-            case Tile.Throne:
+            case Tile.Refu:
+            case Tile.Sanc:
+            case Tile.Thrn:
                 return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
             default:
                 return null;
+        }
+    }
+
+    private getTeamName = (team: Team): string => {
+        switch (team) {
+            case Team.Attackers: return "Attackers";
+            case Team.Defenders: return "Defenders";
+            case Team.None: return "None";
         }
     }
 
@@ -248,7 +256,7 @@ export default class Root extends React.Component<IRootProps, IRootState> {
     }
 
     private isStartingTile = (tile: IBoardTile): boolean =>
-        tile.i !== Tile.Empty
+        tile.i !== Tile.Empt
 
     private isSelectable = (x: number, y: number): boolean => {
         const { game, selected, team } = this.state;

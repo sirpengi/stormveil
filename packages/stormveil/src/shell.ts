@@ -11,8 +11,6 @@ export interface IOptions {
 }
 
 export class Shell {
-    public readonly team = Team;
-    public readonly tile = Tile;
     private state: IState | null = null;
 
     constructor(options: IOptions) {
