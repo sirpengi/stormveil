@@ -61,7 +61,8 @@ h1 {
     text-transform: uppercase;
 }
 
-.Board_Tile_Face {
+.Board_Tile_Face,
+.Element--crispEdges {
     shape-rendering: crispEdges;
 }
 

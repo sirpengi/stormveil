@@ -67,8 +67,8 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                 {this.renderParticipants()}
             </div>
                 
-                <svg className="Match_Board" height="420" width="660">
-                    <g transform="translate(330, 40)">
+                <svg className="Match_Board" width="660" height="440">
+                    <g transform="translate(330, 48)">
                         {this.renderTiles()}
                     </g>
                 </svg>
@@ -132,7 +132,9 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                         </polygon>
                     ))}
                 </g>
-                <g className="Board_Tile_Content">{this.renderTileContent(tile)}</g>
+                <g className="Board_Tile_Content">
+                    {this.renderTileContent(tile)}
+                </g>
             </g>
         );
     }
@@ -148,9 +150,18 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                 );
             case Tile.Defn:
                 return ( <circle r="7" stroke="white" fill="none" strokeWidth="2" /> );
+            case Tile.Refu:
+                return (
+                    <g className="Element--crispEdges" transform="translate(-8, -26) scale(0.45)">
+                        <rect style={{ fill: "#871B1B" }} x="16.5" y="31" width="10" height="6"/>
+                        <path style={{ fill: "#424A60" }} d="M3.5,0c-0.552,0-1,0.447-1,1v3v55c0,0.553,0.448,1,1,1s1-0.447,1-1V4V1C4.5,0.447,4.052,0,3.5,0z"/>
+                        <rect style={{ fill: "#DD352E" }} x="4.5" y="4" width="22" height="29"/>
+                        <path style={{ fill: "#C03A2B" }} d="M26.5,9v24h-6c-2.209,0-4,1.791-4,4c0,2.209,1.791,4,4,4h4h33l-11-16l11-16H26.5z"/>
+                        <path style={{ fill: "#B02721" }} d="M16.5,37c0,2.209,1.791,4,4,4h4h2v-8h-6C18.291,33,16.5,34.791,16.5,37z"/>
+                    </g>
+                );
             case Tile.Cast:
             case Tile.King:
-            case Tile.Refu:
             case Tile.Sanc:
             case Tile.Thrn:
                 return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
