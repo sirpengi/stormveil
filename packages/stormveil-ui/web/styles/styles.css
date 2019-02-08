@@ -5,7 +5,7 @@
     100% { opacity: 0.30; }
 }
 
-@keyframes foo {
+@keyframes flash {
     0%   { opacity: 1.00; }
     50%  { opacity: 0.20; }
     100% { opacity: 1.00; }
@@ -54,7 +54,7 @@ use[href="#sword"] {
 
 .Match_Participant--Selectable {
     cursor: pointer;
-    animation: foo 750ms ease-in-out infinite;
+    animation: flash 750ms ease-in-out infinite;
 }
 
 .Match_Participant--Playing > .Match_Participant_Title {
