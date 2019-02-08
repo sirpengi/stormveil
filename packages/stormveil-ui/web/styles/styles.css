@@ -27,6 +27,12 @@ h1 {
     font-size: 48px;
 }
 
+.Board_Tile_Face,
+use[href="#flag"],
+use[href="#sword"] {
+    shape-rendering: crispEdges;
+}
+
 .Layout_Root {
     display: flex;
     justify-content: center;
@@ -59,11 +65,6 @@ h1 {
 .Match_Participant_Title {
     font-size: 48px;
     text-transform: uppercase;
-}
-
-.Board_Tile_Face,
-.Element--crispEdges {
-    shape-rendering: crispEdges;
 }
 
 .Board_Tile_Face--Top {
