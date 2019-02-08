@@ -5,12 +5,6 @@
     100% { opacity: 0.30; }
 }
 
-@keyframes flash {
-    0%   { opacity: 1.00; }
-    50%  { opacity: 0.20; }
-    100% { opacity: 1.00; }
-}
-
 body {
     background-color: rgb(255, 255, 252);
     color: rgb(72, 72, 72);
@@ -54,7 +48,6 @@ use[href="#sword"] {
 
 .Match_Participant--Selectable {
     cursor: pointer;
-    animation: flash 750ms ease-in-out infinite;
 }
 
 .Match_Participant--Playing > .Match_Participant_Title {
