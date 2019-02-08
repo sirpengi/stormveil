@@ -68,7 +68,7 @@ use[href="#sword"] {
 }
 
 .Board_Tile_Face--Top {
-    stroke: rgba(255, 255, 255, 0.10);
+    stroke: rgba(73, 110, 73, 0.60);
     stroke-width: 1px;
     stroke-dasharray: 6px;
 }
