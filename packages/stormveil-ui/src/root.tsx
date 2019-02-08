@@ -30,7 +30,7 @@ interface ICamera {
     z: number;
 }
 
-enum Face {
+const enum Face {
     Overlay,
     Top,
     Left,
@@ -104,6 +104,7 @@ export default class Root extends React.Component<IRootProps, IRootState> {
         const [ tx, ty ] = this.getTilePosition(tile);
         const color = this.getFaceColor(tile);
         const path = this.getFacePath(tile);
+        const faces = [Face.Top, Face.Overlay, Face.Left, Face.Right];
         return (
             <g
                 key={[x, y].join(", ")}
@@ -115,19 +116,14 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                     "Board_Tile--Selected": this.isSelected(x, y),
                 })}>
                 <g className="Board_Tile_Faces">
-                    {[
-                        Face.Top,
-                        Face.Overlay,
-                        Face.Left,
-                        Face.Right,
-                    ].map(face => (
+                    {faces.map(face => (
                         <polygon
                             key={face}
                             points={path(face).join(", ")}
                             style={{ fill: color(face).toString() }}
                             className={css(
                                 `Board_Tile_Face`,
-                                `Board_Tile_Face--${Face[face]}`
+                                `Board_Tile_Face--${this.getFaceName(face)}`
                             )}>
                         </polygon>
                     ))}
@@ -152,7 +148,7 @@ export default class Root extends React.Component<IRootProps, IRootState> {
                 return ( <circle r="7" stroke="white" fill="none" strokeWidth="2" /> );
             case Tile.Refu:
                 return (
-                    <g className="Element--crispEdges" transform="translate(-8, -26) scale(0.45)">
+                    <g className="Element--crispEdges" transform="translate(-8, -26) scale(0.50)">
                         <rect style={{ fill: "#871B1B" }} x="16.5" y="31" width="10" height="6"/>
                         <path style={{ fill: "#424A60" }} d="M3.5,0c-0.552,0-1,0.447-1,1v3v55c0,0.553,0.448,1,1,1s1-0.447,1-1V4V1C4.5,0.447,4.052,0,3.5,0z"/>
                         <rect style={{ fill: "#DD352E" }} x="4.5" y="4" width="22" height="29"/>
@@ -170,11 +166,20 @@ export default class Root extends React.Component<IRootProps, IRootState> {
         }
     }
 
+    private getFaceName = (face: Face): string => {
+        switch (face) {
+            case Face.Left:    return "Left";
+            case Face.Overlay: return "Overlay";
+            case Face.Right:   return "Right";
+            case Face.Top:     return "Top";
+        }
+    }
+
     private getTeamName = (team: Team): string => {
         switch (team) {
             case Team.Attackers: return "Attackers";
             case Team.Defenders: return "Defenders";
-            case Team.None: return "None";
+            case Team.None:      return "None";
         }
     }
 
@@ -185,7 +190,7 @@ export default class Root extends React.Component<IRootProps, IRootState> {
             Scale.scaleLinear().domain([0, 1]).range(range)(n);
 
         if (this.isStartingTile(tile)) {
-            return Color.hsl(40, 0.22, s([0.40, 0.50]), 1);
+            return Color.hsl(40, 0.15, s([0.40, 0.50]), 1);
         }
 
         return Color.hsl(120, 0.20, s([0.40, 0.45]), 1);
@@ -207,24 +212,22 @@ export default class Root extends React.Component<IRootProps, IRootState> {
 
     private getFacePath = (tile: IBoardTile) => (face: Face) => {
         const { a, s, z } = this.camera;
-        const h = this.isStartingTile(tile) ? z + 4 : z;
         switch (face) {
             case Face.Overlay:
             case Face.Top:
                 return [0, -s + a, s, 0, 0, s - a, -s, 0];
             case Face.Left:
-                return [-s, 0, -s, h, 0, (s - a) + h, 0, (s - a)];
+                return [-s, 0, -s, z, 0, (s - a) + z, 0, (s - a)];
             case Face.Right:
-                return [s, 0, s, h, 0, (s - a) + h, 0, (s - a)];
+                return [s, 0, s, z, 0, (s - a) + z, 0, (s - a)];
         }
     }
 
     private getTilePosition = (tile: IBoardTile): [number, number] => {
         const { a, s, z } = this.camera;
-        const h = this.isStartingTile(tile) ? z + 4 : z;
         return [
             (tile.x - tile.y) * s,
-            (tile.x + tile.y) * (s - a) - h
+            (tile.x + tile.y) * (s - a) - z
         ];
     };
 
