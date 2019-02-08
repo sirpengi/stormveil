@@ -138,29 +138,17 @@ export default class Root extends React.Component<IRootProps, IRootState> {
     private renderTileContent = (tile: IBoardTile) => {
         switch (tile.t) {
             case Tile.Attk:
-                return (
-                    <g transform="translate(-7, -7)">
-                        <line x1="0" y1="0" x2="14" y2="14" stroke="black" strokeWidth="2" />
-                        <line x1="0" y1="14" x2="14" y2="0" stroke="black" strokeWidth="2" />
-                    </g>
-                );
+                return ( <use href="#sword" transform="translate(-8, -24)" /> );
             case Tile.Defn:
-                return ( <circle r="7" stroke="white" fill="none" strokeWidth="2" /> );
-            case Tile.Refu:
-                return (
-                    <g className="Element--crispEdges" transform="translate(-8, -26) scale(0.50)">
-                        <rect style={{ fill: "#871B1B" }} x="16.5" y="31" width="10" height="6"/>
-                        <path style={{ fill: "#424A60" }} d="M3.5,0c-0.552,0-1,0.447-1,1v3v55c0,0.553,0.448,1,1,1s1-0.447,1-1V4V1C4.5,0.447,4.052,0,3.5,0z"/>
-                        <rect style={{ fill: "#DD352E" }} x="4.5" y="4" width="22" height="29"/>
-                        <path style={{ fill: "#C03A2B" }} d="M26.5,9v24h-6c-2.209,0-4,1.791-4,4c0,2.209,1.791,4,4,4h4h33l-11-16l11-16H26.5z"/>
-                        <path style={{ fill: "#B02721" }} d="M16.5,37c0,2.209,1.791,4,4,4h4h2v-8h-6C18.291,33,16.5,34.791,16.5,37z"/>
-                    </g>
-                );
-            case Tile.Cast:
-            case Tile.King:
-            case Tile.Sanc:
+                return ( <use href="#shield" transform="translate(-12, -12)" style={{ fill: "white" }} /> );
             case Tile.Thrn:
-                return ( <circle r="8" stroke="white" fill="none" strokeWidth="4" /> );
+                return ( <use href="#throne" transform="translate(-12, -16)" style={{ fill: "white" }} /> );
+            case Tile.Refu:
+                return ( <use href="#flag" transform="translate(-6, -20)" /> );
+            case Tile.King:
+            case Tile.Cast:
+            case Tile.Sanc:
+                return ( <use href="#king" transform="translate(-15, -20)" style={{ fill: "white" }} /> );
             default:
                 return null;
         }
