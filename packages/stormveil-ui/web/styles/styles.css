@@ -67,9 +67,9 @@ h1 {
 }
 
 .Board_Tile_Face--Top {
-    stroke: rgba(0, 0, 0, 0.10);
+    stroke: rgba(255, 255, 255, 0.10);
     stroke-width: 1px;
-    stroke-dasharray: 4px;
+    stroke-dasharray: 6px;
 }
 
 .Board_Tile--Selectable {
