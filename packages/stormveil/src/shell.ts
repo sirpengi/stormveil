@@ -1,73 +1,29 @@
-import { best } from "./ai";
-import { unmarshal } from "./serialization";
-import { IState, vec, moveable, moves, play, victor } from "./state";
+import { IState, moveable, moves as movesfoo, vec } from "./state";
 import { Team } from "./team";
-import { Tile } from "./tile";
 import { Vector } from "./types/vector";
+export { best } from "./ai";
+export { team } from "./state";
 
 export interface IOptions {
     board: string;
     start: Team;
 }
 
-export class Shell {
-    private state: IState | null = null;
+export function tiles(state: IState) {
+    return state.board.tiles.map((tile, i) => {
+        const [ x, y ] = vec(state.board.width, i);
+        return { x, y, t: tile, i: state.initial.board.tiles[i] };
+    });
+}
 
-    constructor(options: IOptions) {
-        const board = unmarshal(options.board);
-        this.state = {
-            board: board,
-            turn: options.start,
-            history: [],
-            initial: {
-                board: board,
-                turn: options.start,
-            },
-        };
-    }
+export function turn(state: IState) {
+    return state.turn;
+}
 
-    public play(a: Vector, b: Vector): this {
-        this.state = play(this.getState(), a, b);
-        return this;
-    }
+export function candidates(state: IState, team: Team) {
+    return moveable(state.board, team);
+}
 
-    public candidates(t: Team): Vector[] {
-        return moveable(this.getState().board, t);
-    }
-
-    public moves(a: Vector): Vector[] {
-        return moves(this.getState().board, a);
-    }
-
-    public best(t: Team, depth: number = 3): [Vector, Vector] {
-        return best(this.getState().board, t, depth);
-    }
-
-    public history() {
-        return this.getState().history;
-    }
-
-    public board(): Array<{ x: number, y: number, t: Tile, i: Tile }> {
-        const state = this.getState();
-        return state.board.tiles.map((t, i) => {
-            const [ x, y ] = vec(state.board.width, i);
-            return { x, y, t, i: state.initial.board.tiles[i] };
-        });
-    }
-
-    public turn(): Team {
-        return this.getState().turn;
-    }
-
-    public victor(): Team | null {
-        return victor(this.getState().board);
-    }
-
-    private getState(): IState {
-        if (this.state === null) {
-            throw new Error();
-        }
-
-        return this.state;
-    }
+export function moves(state: IState, xy: Vector) {
+    return movesfoo(state.board, xy);
 }

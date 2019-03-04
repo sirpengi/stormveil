@@ -1,10 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Root from "./root";
+import App from "./app";
 
 function main() {
     const element = document.querySelector("#root");
-    ReactDOM.render(React.createElement(Root), element);
+    if (!element) {
+        throw new Error("Unable to find '#root' DOM element, cannot render React application.");
+    }
+
+    ReactDOM.render(
+        React.createElement(App),
+        element,
+    );
 }
 
 document.addEventListener("DOMContentLoaded", main);

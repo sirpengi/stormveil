@@ -1,15 +1,26 @@
-@keyframes pulse {
-    0%   { opacity: 0.30; }
-    25%  { opacity: 0; }
-    75%  { opacity: 0; }
-    100% { opacity: 0.30; }
+@keyframes dash {
+    from { stroke-dashoffset: 140; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-8px); }
+}
+
+html, body {
+    min-height: 100vh;
 }
 
 body {
-    background-color: rgb(255, 255, 252);
+    background-color: rgb(252, 250, 250);
     color: rgb(72, 72, 72);
     font-family: sans-serif;
-    line-height: 1.6;
+    line-height: 1.5;
+}
+
+em {
+    font-weight: bold;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -21,49 +32,8 @@ h1 {
     font-size: 48px;
 }
 
-.Board_Tile_Face,
-use[href="#flag"],
-use[href="#sword"] {
+.Board_Tile_Face, use[href="#flag"] {
     shape-rendering: crispEdges;
-}
-
-.Layout_Root {
-    display: flex;
-    justify-content: center;
-}
-
-.Layout_Content {
-    margin-top: 5%;
-    max-width: 660px;
-}
-
-.Match_Participants {
-    justify-content: space-between;
-    display: flex;
-}
-
-.Match_Participant_Title {
-    color: rgb(120, 120, 120);
-}
-
-.Match_Participant--Selectable {
-    cursor: pointer;
-}
-
-.Match_Participant--Playing > .Match_Participant_Title {
-    color: rgb(0, 0, 0);
-    text-decoration: underline;
-}
-
-.Match_Participant_Title {
-    font-size: 48px;
-    text-transform: uppercase;
-}
-
-.Board_Tile_Face--Top {
-    stroke: rgba(73, 110, 73, 0.60);
-    stroke-width: 1px;
-    stroke-dasharray: 6px;
 }
 
 .Board_Tile--Selectable {
@@ -71,13 +41,180 @@ use[href="#sword"] {
 }
 
 .Board_Tile--Selectable .Board_Tile_Face--Overlay {
-    animation: pulse 1250ms ease-in infinite;
-}
-
-.Board_Tile--Selected .Board_Tile_Face--Overlay {
-    opacity: 0.80;
+    animation: dash 4s linear infinite;
+    stroke-dasharray: 8;
+    stroke-width: 1px;
+    stroke: rgba(255, 255, 255, 1);
 }
 
 .Board_Tile_Face--Overlay {
+    transition: fill 75ms ease;
+    shape-rendering: geometricPrecision;
+}
+
+.Board_Tile--Selectable .Board_Tile_Face--Overlay:hover {
+    fill: rgba(255, 255, 255, 0.10) !important;
+}
+
+.Board_Tile_Content {
+    pointer-events: none;
+}
+
+.Board_Tile_Content--Ready {
+    animation: bounce 500ms ease 0ms infinite alternate;
+}
+
+.MainMenuOptionTitle {
+    border-bottom: 1px dashed rgb(220, 220, 220);
+    margin-bottom: 16px;
+}
+
+.MainMenuOption + .MainMenuOption {
+    margin-top: 36px;
+}
+
+.MainMenuOptionContent {
+    font-size: 14px;
+}
+
+.MainMenuOptionContent + .MainMenuOptionContent {
+    margin-top: 8px;
+}
+
+.App,
+.AppView,
+.AppViewPanel,
+.AppViewBoard {
+    min-height: 100vh;
+}
+
+.AppView {
+    display: flex;
+}
+
+.AppViewContent {
+    padding: 16px 24px;
+}
+
+.AppViewTitle {
+    font-size: 36px;
+    margin-bottom: 24px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.AppViewPanel {
+    background-color: rgb(255, 255, 252);
+    border-right: 1px dotted rgba(0, 0, 0, 0.10);
+    width: 480px;
+}
+
+.AppViewBoard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 auto;
+}
+
+.TransitionFadeIn {
+    transition: opacity 500ms ease-in;
+}
+
+.TransitionFadeIn-appear {
     opacity: 0;
+}
+
+.TransitionFadeIn-appear-active {
+    opacity: 1;
+}
+
+.TransitionFadeIn-enter-done {
+    opacity: 1;
+}
+
+.AppViewBoard-exited {
+    opacity: 0;
+}
+
+.AppViewBoard-entering {
+    opacity: 1;
+}
+.AppViewBorad-entered {
+    opacity: 1;
+}
+
+.Dropdown {
+    transition: transform 750ms ease;
+}
+
+.Dropdown-appear {
+    transform: translateY(-756px);
+}
+
+.Dropdown-appear-active,
+.Dropdown-enter-done {
+    transform: translateY(0);
+}
+
+.TeamButtons {
+    display: flex;
+}
+
+.Button {
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: background-color 75ms ease;
+}
+
+.Button:hover {
+    background-color: #f2f2f2;
+}
+
+.Button:active {
+    border-color: #aaa;
+    background-color: #f1f1f1;
+}
+
+.ButtonSelected,
+.ButtonSelected:hover,
+.ButtonSelected:active {
+    border-color: white;
+    background-color: hsla(231, 48%, 16%, 1);
+}
+
+.ButtonSelected.ButtonTeam use {
+    fill: white;
+}
+
+.ButtonTeam {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 40px;
+}
+
+.ButtonStart {
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding-right: 16px;
+    vertical-align: middle;
+    width: 152px;
+}
+
+.ButtonTeam + .ButtonTeam {
+    margin-left: 8px;
+}
+
+.NewGameControls {
+    display: flex;
+    align-items: center;
+}
+
+.TeamButtons {
+    height: 40px;
 }

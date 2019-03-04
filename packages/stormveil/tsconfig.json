@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "commonjs", 
+        "module": "commonjs",
         "strict": true,
         "noImplicitReturns": true,
         "outDir": "lib",
@@ -11,6 +11,9 @@
         "sourceMap": true,
         "lib": [
             "es2017"
+        ],
+        "plugins": [
+            { "name": "typescript-tslint-plugin" }
         ]
     }
 }
