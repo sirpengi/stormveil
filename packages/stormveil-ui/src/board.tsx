@@ -102,6 +102,14 @@ export default class Board extends React.Component<IProps, {}> {
         }
     }
 
+    private vectorVector = (v: Vector): Vector => {
+        const { a, s, z } = this.camera;
+        return [
+            (v[0] - v[1]) * s,
+            (v[0] + v[1]) * (s - a) - z,
+        ];
+    }
+
     private tileVector = (tile: IBoardTile): Vector => {
         const { a, s, z } = this.camera;
         return [
@@ -210,6 +218,17 @@ export default class Board extends React.Component<IProps, {}> {
         });
     }
 
+    private renderLastMove = () => {
+        const { game, team } = this.props;
+        const lastMove = game.history[game.history.length - 1];
+        if (turn(game) === team && lastMove) {
+            const [ ax, ay ] = this.vectorVector(lastMove[0]);
+            const [ bx, by ] = this.vectorVector(lastMove[1]);
+            return ( <line className="Board_Marker_Move" x1={ax} y1={ay} x2={bx} y2={by} markerEnd="url(#moveMarkerHead)" /> );
+        }
+        return null;
+    }
+
     private renderTileContent = (tile: IBoardTile) => {
         switch (tile.t) {
             case Tile.Attk:
@@ -252,10 +271,16 @@ export default class Board extends React.Component<IProps, {}> {
     public render() {
         return (
             <svg className="Match_Board" width="704" height="456">
+                <defs>
+                    <marker id="moveMarkerHead" orient="auto" markerWidth="2" markerHeight="4" refX="0.1" refY="2">
+                        <path d="M0,0 V4 L2,2 Z" style={{ fill: "rgba(255, 0, 0, 0.4)" }} />
+                    </marker>
+                </defs>
                 <g transform="translate(352, 37)">
                     <g className="Board_Tiles">
                         {this.renderTiles(this.renderTile)}
                     </g>
+                    {this.renderLastMove()}
                     {this.renderTileContents()}
                 </g>
             </svg>

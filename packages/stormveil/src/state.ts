@@ -274,7 +274,7 @@ export function moves(s: IBoard, [ax, ay]: Vector): Vector[] {
 export function play(s: IState, a: Vector, b: Vector): IState {
     return {
         board: resolve(s.board, a, b),
-        history: s.history.concat([a, b]),
+        history: s.history.concat([[a, b]]),
         turn: opponent(s.turn),
         initial: s.initial,
     };
