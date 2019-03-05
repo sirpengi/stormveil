@@ -1,6 +1,7 @@
 import { IState, moveable, moves as movesfoo, vec } from "./state";
 import { Team } from "./team";
 import { Vector } from "./types/vector";
+import { Tile } from "./tile";
 export { best } from "./ai";
 export { team } from "./state";
 
@@ -9,10 +10,24 @@ export interface IOptions {
     start: Team;
 }
 
-export function tiles(state: IState) {
+export interface ITile {
+    x: number;
+    y: number;
+    t: Tile;
+    i: Tile;
+    k: number;
+}
+
+export function tiles(state: IState): ITile[] {
     return state.board.tiles.map((tile, i) => {
         const [ x, y ] = vec(state.board.width, i);
-        return { x, y, t: tile, i: state.initial.board.tiles[i] };
+        return {
+            x: x,
+            y: y,
+            t: tile,
+            i: state.initial.board.tiles[i],
+            k: 42,
+        };
     });
 }
 

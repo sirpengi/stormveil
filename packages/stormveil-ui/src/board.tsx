@@ -4,7 +4,7 @@ import * as Scale from "d3-scale";
 import React from "react";
 import { CSSTransition } from "react-transition-group";
 import { IState, Team, Tile } from "stormveil";
-import { candidates, moves, tiles, turn, team } from "stormveil/lib/shell";
+import { candidates, ITile, moves, team, tiles, turn } from "stormveil/lib/shell";
 import { Vector } from "./common";
 import { noise } from "./noise";
 
@@ -23,13 +23,6 @@ interface IProps {
     team: Team;
     tileSize?: number;
     viewAngle?: number;
-}
-
-export interface IBoardTile {
-    x: number;
-    y: number;
-    t: Tile;
-    i: Tile;
 }
 
 const enum Face {
@@ -62,7 +55,7 @@ export default class Board extends React.Component<IProps, {}> {
         }
     }
 
-    private tileColor = (tile: IBoardTile): Color.HSLColor => {
+    private tileColor = (tile: ITile): Color.HSLColor => {
         const { x, y } = tile;
         const n = noise(x, y, 5, 3, 0.035);
         const s = (range: [number, number]) =>
@@ -75,7 +68,7 @@ export default class Board extends React.Component<IProps, {}> {
         return Color.hsl(120, 0.20, s([0.40, 0.45]), 1);
     }
 
-    private faceColor = (tile: IBoardTile) => (face: Face): Color.Color => {
+    private faceColor = (tile: ITile) => (face: Face): Color.Color => {
         const color = this.tileColor(tile);
         switch (face) {
             case Face.Overlay:
@@ -89,7 +82,7 @@ export default class Board extends React.Component<IProps, {}> {
         }
     }
 
-    private facePath = (_: IBoardTile) => (face: Face) => {
+    private facePath = (_: ITile) => (face: Face) => {
         const { a, s, z } = this.camera;
         switch (face) {
             case Face.Overlay:
@@ -102,7 +95,7 @@ export default class Board extends React.Component<IProps, {}> {
         }
     }
 
-    private tileVector = (tile: IBoardTile): Vector => {
+    private tileVector = (tile: ITile): Vector => {
         const { a, s, z } = this.camera;
         return [
             (tile.x - tile.y) * s,
@@ -110,7 +103,7 @@ export default class Board extends React.Component<IProps, {}> {
         ];
     }
 
-    private onSelectTile = (tile: IBoardTile): void => {
+    private onSelectTile = (tile: ITile): void => {
         const { x, y } = tile;
         if (!this.isSelectable(tile)) {
             return;
@@ -130,10 +123,10 @@ export default class Board extends React.Component<IProps, {}> {
         this.props.onMove(selected, [x, y]);
     }
 
-    private isStartingTile = (tile: IBoardTile): boolean =>
+    private isStartingTile = (tile: ITile): boolean =>
         tile.i !== Tile.Empt
 
-    private isSelectable = (tile: IBoardTile): boolean => {
+    private isSelectable = (tile: ITile): boolean => {
         const { isStarted } = this.props;
         if (!isStarted) {
             return false;
@@ -160,7 +153,7 @@ export default class Board extends React.Component<IProps, {}> {
             .some(([ vx, vy ]) => vx === x && vy === y);
     }
 
-    private isSelected = (tile: IBoardTile): boolean => {
+    private isSelected = (tile: ITile): boolean => {
         const { x, y } = tile;
         const { selected } = this.props;
         if (selected === null) {
@@ -171,7 +164,7 @@ export default class Board extends React.Component<IProps, {}> {
         return sx === x && sy === y;
     }
 
-    private renderTile = (props: IRenderTileProps, tile: IBoardTile) => {
+    private renderTile = (props: IRenderTileProps, tile: ITile) => {
         const color = this.faceColor(tile);
         const path = this.facePath(tile);
         return (
@@ -197,20 +190,20 @@ export default class Board extends React.Component<IProps, {}> {
         );
     }
 
-    private renderTiles = (render: (props: IRenderTileProps, tile: IBoardTile) => JSX.Element) => {
+    private renderTiles = (render: (props: IRenderTileProps, tile: ITile) => JSX.Element) => {
         return tiles(this.props.game).map(tile => {
             const [ tx, ty ] = this.tileVector(tile);
             return render({
                 key: [tile.x, tile.y].join(", "),
                 className: "Board_Tile_Container",
                 style: {
-                    transform: `translate(${tx}px, ${ty}px)`
+                    transform: `translate(${tx}px, ${ty}px)`,
                 },
             }, tile);
         });
     }
 
-    private renderTileContent = (tile: IBoardTile) => {
+    private renderTileContent = (tile: ITile) => {
         switch (tile.t) {
             case Tile.Attk:
                 return ( <use href="#sword" transform="translate(-8, -24)" /> );
